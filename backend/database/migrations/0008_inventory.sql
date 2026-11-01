@@ -1,0 +1,216 @@
+-- Ingredients, recipes, stock, suppliers, purchasing. Unit costs use DECIMAL(19,6).
+
+CREATE TABLE ingredients (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  public_id CHAR(26) COLLATE ascii_bin NOT NULL,
+  cafe_id BIGINT UNSIGNED NOT NULL,
+  name VARCHAR(150) NOT NULL,
+  sku VARCHAR(64) NULL,
+  unit_code VARCHAR(12) COLLATE ascii_bin NOT NULL,
+  is_perishable TINYINT(1) NOT NULL DEFAULT 0,
+  created_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  updated_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
+  deleted_at DATETIME(3) NULL,
+  active_marker TINYINT GENERATED ALWAYS AS (IF(deleted_at IS NULL, 1, NULL)) VIRTUAL,
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_ingredients_public_id (public_id),
+  UNIQUE KEY uq_ingredients_tenant (cafe_id, id),
+  UNIQUE KEY uq_ingredients_name (cafe_id, name, active_marker),
+  FOREIGN KEY (cafe_id) REFERENCES cafes (id),
+  FOREIGN KEY (unit_code) REFERENCES units (code)
+);
+
+CREATE TABLE inventory_items (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  cafe_id BIGINT UNSIGNED NOT NULL,
+  branch_id BIGINT UNSIGNED NOT NULL,
+  ingredient_id BIGINT UNSIGNED NOT NULL,
+  on_hand_quantity DECIMAL(18,4) NOT NULL DEFAULT 0,
+  average_unit_cost DECIMAL(19,6) NOT NULL DEFAULT 0,
+  reorder_level DECIMAL(18,4) NULL,
+  low_stock_notified_at DATETIME(3) NULL,
+  updated_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_inventory_items_tenant (cafe_id, id),
+  UNIQUE KEY uq_inventory_items (cafe_id, branch_id, ingredient_id),
+  FOREIGN KEY (cafe_id, branch_id) REFERENCES cafe_branches (cafe_id, id),
+  FOREIGN KEY (cafe_id, ingredient_id) REFERENCES ingredients (cafe_id, id)
+);
+
+CREATE TABLE stock_batches (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  cafe_id BIGINT UNSIGNED NOT NULL,
+  branch_id BIGINT UNSIGNED NOT NULL,
+  ingredient_id BIGINT UNSIGNED NOT NULL,
+  batch_code VARCHAR(64) NULL,
+  received_quantity DECIMAL(18,4) NOT NULL,
+  remaining_quantity DECIMAL(18,4) NOT NULL,
+  unit_cost DECIMAL(19,6) NOT NULL,
+  received_at DATETIME(3) NOT NULL,
+  expires_on DATE NULL,
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_stock_batches_tenant (cafe_id, id),
+  KEY idx_stock_batches_expiry (cafe_id, branch_id, expires_on),
+  FOREIGN KEY (cafe_id, branch_id) REFERENCES cafe_branches (cafe_id, id),
+  FOREIGN KEY (cafe_id, ingredient_id) REFERENCES ingredients (cafe_id, id),
+  CONSTRAINT chk_stock_batches CHECK (received_quantity > 0 AND remaining_quantity >= 0 AND remaining_quantity <= received_quantity AND unit_cost >= 0)
+);
+
+-- Append-only (triggers in 0012). quantity is signed: + in, - out.
+CREATE TABLE stock_movements (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  cafe_id BIGINT UNSIGNED NOT NULL,
+  branch_id BIGINT UNSIGNED NOT NULL,
+  ingredient_id BIGINT UNSIGNED NOT NULL,
+  batch_id BIGINT UNSIGNED NULL,
+  movement_type ENUM('stock_in','stock_out','adjustment','sale_consumption','sale_reversal','wastage','purchase_receipt','transfer') NOT NULL,
+  quantity DECIMAL(18,4) NOT NULL,
+  unit_cost DECIMAL(19,6) NOT NULL,
+  currency_code CHAR(3) COLLATE ascii_bin NOT NULL,
+  source_type VARCHAR(40) COLLATE ascii_bin NULL,
+  source_id BIGINT UNSIGNED NULL,
+  reason VARCHAR(255) NULL,
+  created_by_user_id BIGINT UNSIGNED NULL,
+  occurred_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_stock_movements_tenant (cafe_id, id),
+  KEY idx_stock_movements_lookup (cafe_id, branch_id, ingredient_id, occurred_at),
+  KEY idx_stock_movements_source (cafe_id, source_type, source_id),
+  FOREIGN KEY (cafe_id, currency_code) REFERENCES cafes (id, currency_code),
+  FOREIGN KEY (cafe_id, branch_id) REFERENCES cafe_branches (cafe_id, id),
+  FOREIGN KEY (cafe_id, ingredient_id) REFERENCES ingredients (cafe_id, id),
+  FOREIGN KEY (cafe_id, batch_id) REFERENCES stock_batches (cafe_id, id),
+  FOREIGN KEY (created_by_user_id) REFERENCES users (id),
+  CONSTRAINT chk_stock_movements_qty CHECK (quantity <> 0 AND unit_cost >= 0)
+);
+
+CREATE TABLE product_recipes (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  cafe_id BIGINT UNSIGNED NOT NULL,
+  product_id BIGINT UNSIGNED NOT NULL,
+  variant_id BIGINT UNSIGNED NULL,
+  variant_key BIGINT UNSIGNED GENERATED ALWAYS AS (IFNULL(variant_id, 0)) VIRTUAL,
+  ingredient_id BIGINT UNSIGNED NOT NULL,
+  quantity DECIMAL(18,4) NOT NULL,
+  waste_percent DECIMAL(5,2) NOT NULL DEFAULT 0,
+  created_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  updated_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_product_recipes_tenant (cafe_id, id),
+  UNIQUE KEY uq_product_recipes (product_id, variant_key, ingredient_id),
+  FOREIGN KEY (cafe_id, product_id) REFERENCES products (cafe_id, id),
+  FOREIGN KEY (cafe_id, product_id, variant_id) REFERENCES product_variants (cafe_id, product_id, id),
+  FOREIGN KEY (cafe_id, ingredient_id) REFERENCES ingredients (cafe_id, id),
+  CONSTRAINT chk_product_recipes CHECK (quantity > 0 AND waste_percent BETWEEN 0 AND 100)
+);
+
+CREATE TABLE suppliers (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  public_id CHAR(26) COLLATE ascii_bin NOT NULL,
+  cafe_id BIGINT UNSIGNED NOT NULL,
+  name VARCHAR(200) NOT NULL,
+  contact_name VARCHAR(150) NULL,
+  email VARCHAR(254) NULL,
+  phone VARCHAR(20) NULL,
+  address VARCHAR(500) NULL,
+  tax_registration_number VARCHAR(64) NULL,
+  payment_terms_days SMALLINT UNSIGNED NULL,
+  created_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  updated_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
+  deleted_at DATETIME(3) NULL,
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_suppliers_public_id (public_id),
+  UNIQUE KEY uq_suppliers_tenant (cafe_id, id),
+  FOREIGN KEY (cafe_id) REFERENCES cafes (id)
+);
+
+CREATE TABLE purchase_orders (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  public_id CHAR(26) COLLATE ascii_bin NOT NULL,
+  cafe_id BIGINT UNSIGNED NOT NULL,
+  branch_id BIGINT UNSIGNED NOT NULL,
+  supplier_id BIGINT UNSIGNED NOT NULL,
+  po_number VARCHAR(40) NOT NULL,
+  status ENUM('draft','sent','partially_received','received','cancelled') NOT NULL DEFAULT 'draft',
+  currency_code CHAR(3) COLLATE ascii_bin NOT NULL,
+  total_amount DECIMAL(19,4) NOT NULL DEFAULT 0,
+  expected_on DATE NULL,
+  notes VARCHAR(500) NULL,
+  created_by_user_id BIGINT UNSIGNED NULL,
+  created_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  updated_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_purchase_orders_public_id (public_id),
+  UNIQUE KEY uq_purchase_orders_tenant (cafe_id, id),
+  UNIQUE KEY uq_purchase_orders_number (cafe_id, po_number),
+  FOREIGN KEY (cafe_id, branch_id) REFERENCES cafe_branches (cafe_id, id),
+  FOREIGN KEY (cafe_id, supplier_id) REFERENCES suppliers (cafe_id, id),
+  FOREIGN KEY (currency_code) REFERENCES currencies (code),
+  FOREIGN KEY (created_by_user_id) REFERENCES users (id)
+);
+
+CREATE TABLE purchase_order_items (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  cafe_id BIGINT UNSIGNED NOT NULL,
+  purchase_order_id BIGINT UNSIGNED NOT NULL,
+  ingredient_id BIGINT UNSIGNED NOT NULL,
+  ordered_quantity DECIMAL(18,4) NOT NULL,
+  received_quantity DECIMAL(18,4) NOT NULL DEFAULT 0,
+  unit_cost DECIMAL(19,6) NOT NULL,
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_purchase_order_items_tenant (cafe_id, id),
+  FOREIGN KEY (cafe_id, purchase_order_id) REFERENCES purchase_orders (cafe_id, id),
+  FOREIGN KEY (cafe_id, ingredient_id) REFERENCES ingredients (cafe_id, id),
+  CONSTRAINT chk_purchase_order_items CHECK (ordered_quantity > 0 AND received_quantity >= 0 AND unit_cost >= 0)
+);
+
+CREATE TABLE supplier_invoices (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  public_id CHAR(26) COLLATE ascii_bin NOT NULL,
+  cafe_id BIGINT UNSIGNED NOT NULL,
+  supplier_id BIGINT UNSIGNED NOT NULL,
+  purchase_order_id BIGINT UNSIGNED NULL,
+  supplier_invoice_number VARCHAR(64) NOT NULL,
+  status ENUM('unpaid','partially_paid','paid','void') NOT NULL DEFAULT 'unpaid',
+  currency_code CHAR(3) COLLATE ascii_bin NOT NULL,
+  subtotal_amount DECIMAL(19,4) NOT NULL,
+  tax_amount DECIMAL(19,4) NOT NULL DEFAULT 0,
+  total_amount DECIMAL(19,4) NOT NULL,
+  paid_amount DECIMAL(19,4) NOT NULL DEFAULT 0,
+  invoice_date DATE NOT NULL,
+  due_on DATE NULL,
+  document_asset_id BIGINT UNSIGNED NULL,
+  created_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  updated_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_supplier_invoices_public_id (public_id),
+  UNIQUE KEY uq_supplier_invoices_tenant (cafe_id, id),
+  UNIQUE KEY uq_supplier_invoices_tenant_currency (cafe_id, id, currency_code),
+  UNIQUE KEY uq_supplier_invoices_number (cafe_id, supplier_id, supplier_invoice_number),
+  FOREIGN KEY (cafe_id, supplier_id) REFERENCES suppliers (cafe_id, id),
+  FOREIGN KEY (cafe_id, purchase_order_id) REFERENCES purchase_orders (cafe_id, id),
+  FOREIGN KEY (cafe_id, document_asset_id) REFERENCES media_assets (cafe_id, id),
+  FOREIGN KEY (currency_code) REFERENCES currencies (code),
+  CONSTRAINT chk_supplier_invoices CHECK (total_amount >= 0 AND paid_amount >= 0 AND paid_amount <= total_amount)
+);
+
+CREATE TABLE supplier_payments (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  public_id CHAR(26) COLLATE ascii_bin NOT NULL,
+  cafe_id BIGINT UNSIGNED NOT NULL,
+  supplier_invoice_id BIGINT UNSIGNED NOT NULL,
+  method_code VARCHAR(32) COLLATE ascii_bin NOT NULL,
+  currency_code CHAR(3) COLLATE ascii_bin NOT NULL,
+  amount DECIMAL(19,4) NOT NULL,
+  reference VARCHAR(100) NULL,
+  paid_on DATE NOT NULL,
+  recorded_by_user_id BIGINT UNSIGNED NOT NULL,
+  created_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_supplier_payments_public_id (public_id),
+  UNIQUE KEY uq_supplier_payments_tenant (cafe_id, id),
+  FOREIGN KEY (cafe_id, supplier_invoice_id, currency_code) REFERENCES supplier_invoices (cafe_id, id, currency_code),
+  FOREIGN KEY (method_code) REFERENCES payment_methods (code),
+  FOREIGN KEY (recorded_by_user_id) REFERENCES users (id),
+  CONSTRAINT chk_supplier_payments CHECK (amount > 0)
+);

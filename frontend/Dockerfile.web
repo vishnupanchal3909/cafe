@@ -1,0 +1,12 @@
+# Build one Flutter web app: docker build -f Dockerfile.web --build-arg APP=cafe_customer_app --build-arg API_URL=https://api.example.com .
+FROM ghcr.io/cirruslabs/flutter:stable AS build
+ARG APP
+ARG API_URL
+WORKDIR /src
+COPY . .
+RUN flutter pub get && cd apps/$APP && flutter build web --release --dart-define=API_URL=$API_URL --no-web-resources-cdn
+
+FROM nginx:1.27-alpine
+ARG APP
+COPY --from=build /src/apps/$APP/build/web /usr/share/nginx/html
+RUN printf 'server { listen 80; root /usr/share/nginx/html; location / { try_files $uri $uri/ /index.html; } add_header X-Content-Type-Options nosniff; add_header X-Frame-Options DENY; }' > /etc/nginx/conf.d/default.conf

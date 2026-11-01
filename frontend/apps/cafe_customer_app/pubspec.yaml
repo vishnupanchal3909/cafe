@@ -1,0 +1,38 @@
+name: cafe_customer_app
+publish_to: none
+version: 0.1.0
+resolution: workspace
+environment:
+  sdk: ^3.8.0
+dependencies:
+  decimal: ^3.2.1
+  dio: ^5.8.0
+  equatable: ^2.0.5
+  flutter:
+    sdk: flutter
+  flutter_bloc: ^9.1.0
+  flutter_localizations:
+    sdk: flutter
+  flutter_web_plugins:
+    sdk: flutter
+  get_it: ^8.0.0
+  go_router: ^16.0.0
+  intl: any
+  shared_core:
+    path: ../../packages/shared_core
+  shared_design_system:
+    path: ../../packages/shared_design_system
+  shared_localization:
+    path: ../../packages/shared_localization
+  shared_models:
+    path: ../../packages/shared_models
+  shared_network:
+    path: ../../packages/shared_network
+  url_launcher: ^6.3.0
+  web: ^1.1.0
+dev_dependencies:
+  bloc_test: ^10.0.0
+  flutter_test:
+    sdk: flutter
+flutter:
+  uses-material-design: true

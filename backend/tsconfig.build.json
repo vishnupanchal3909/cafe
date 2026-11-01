@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "target": "ES2023", "module": "CommonJS", "moduleResolution": "node10", "ignoreDeprecations": "5.0",
+    "outDir": "dist", "rootDir": ".", "strict": true, "esModuleInterop": true, "skipLibCheck": true,
+    "experimentalDecorators": true, "emitDecoratorMetadata": true, "strictPropertyInitialization": false,
+    "sourceMap": true, "types": ["node", "multer"], "resolveJsonModule": true
+  },
+  "include": ["src/**/*.ts", "test/**/*.ts", "database/table-classification.ts"]
+}

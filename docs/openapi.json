@@ -1,0 +1,7462 @@
+{
+ "openapi": "3.0.0",
+ "paths": {
+  "/api/v1/auth/login": {
+   "post": {
+    "operationId": "AuthController_login",
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/LoginDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "tags": [
+     "auth"
+    ]
+   }
+  },
+  "/api/v1/auth/refresh": {
+   "post": {
+    "operationId": "AuthController_refresh",
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/RefreshDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "tags": [
+     "auth"
+    ]
+   }
+  },
+  "/api/v1/auth/logout": {
+   "post": {
+    "operationId": "AuthController_logout",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "auth"
+    ]
+   }
+  },
+  "/api/v1/auth/logout-all": {
+   "post": {
+    "operationId": "AuthController_logoutAll",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "auth"
+    ]
+   }
+  },
+  "/api/v1/auth/me": {
+   "get": {
+    "operationId": "AuthController_me",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "auth"
+    ]
+   }
+  },
+  "/api/v1/auth/sessions": {
+   "get": {
+    "operationId": "AuthController_sessions",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "auth"
+    ]
+   }
+  },
+  "/api/v1/auth/sessions/{id}": {
+   "delete": {
+    "operationId": "AuthController_revoke",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "auth"
+    ]
+   }
+  },
+  "/api/v1/auth/mfa/enroll": {
+   "post": {
+    "operationId": "AuthController_mfaEnroll",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "auth"
+    ]
+   }
+  },
+  "/api/v1/auth/mfa/confirm": {
+   "post": {
+    "operationId": "AuthController_mfaConfirm",
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/TotpDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "auth"
+    ]
+   }
+  },
+  "/api/v1/customer/auth/register": {
+   "post": {
+    "operationId": "CustomerAuthController_register",
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/CustomerRegisterDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "tags": [
+     "customer-auth"
+    ]
+   }
+  },
+  "/api/v1/customer/auth/login": {
+   "post": {
+    "operationId": "CustomerAuthController_login",
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/CustomerLoginDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "tags": [
+     "customer-auth"
+    ]
+   }
+  },
+  "/api/v1/customer/auth/google": {
+   "post": {
+    "operationId": "CustomerAuthController_google",
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/GoogleDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "tags": [
+     "customer-auth"
+    ]
+   }
+  },
+  "/api/v1/auth/accept-invitation": {
+   "post": {
+    "operationId": "InvitationController_accept",
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/AcceptInvitationDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "tags": [
+     "auth"
+    ]
+   }
+  },
+  "/api/v1/public/cafes/register": {
+   "post": {
+    "operationId": "PublicCafeController_register",
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/RegisterCafeDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "tags": [
+     "public"
+    ]
+   }
+  },
+  "/api/v1/public/reference": {
+   "get": {
+    "operationId": "PublicCafeController_reference",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "tags": [
+     "public"
+    ]
+   }
+  },
+  "/api/v1/public/cafes/{slug}/config": {
+   "get": {
+    "operationId": "PublicCafeController_config",
+    "parameters": [
+     {
+      "name": "slug",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "lang",
+      "required": true,
+      "in": "query",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "tags": [
+     "public"
+    ]
+   }
+  },
+  "/api/v1/public/media/{id}": {
+   "get": {
+    "operationId": "PublicCafeController_media",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "tags": [
+     "public"
+    ]
+   }
+  },
+  "/api/v1/cafe/profile": {
+   "get": {
+    "operationId": "CafeController_profile",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe"
+    ]
+   },
+   "patch": {
+    "operationId": "CafeController_update",
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/UpdateProfileDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe"
+    ]
+   }
+  },
+  "/api/v1/cafe/branches": {
+   "get": {
+    "operationId": "CafeController_branches",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe"
+    ]
+   },
+   "post": {
+    "operationId": "CafeController_createBranch",
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/CreateBranchDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe"
+    ]
+   }
+  },
+  "/api/v1/cafe/branches/{id}": {
+   "patch": {
+    "operationId": "CafeController_updateBranch",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/UpdateBranchDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe"
+    ]
+   }
+  },
+  "/api/v1/cafe/branches/{id}/hours": {
+   "get": {
+    "operationId": "CafeController_hours",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe"
+    ]
+   },
+   "put": {
+    "operationId": "CafeController_setHours",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/SetHoursDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe"
+    ]
+   }
+  },
+  "/api/v1/cafe/languages": {
+   "put": {
+    "operationId": "CafeController_languages",
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/SetLanguagesDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe"
+    ]
+   }
+  },
+  "/api/v1/cafe/settings": {
+   "get": {
+    "operationId": "CafeController_settings",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe"
+    ]
+   },
+   "patch": {
+    "operationId": "CafeController_updateSettings",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe"
+    ]
+   }
+  },
+  "/api/v1/cafe/theme": {
+   "get": {
+    "operationId": "CafeController_theme",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe"
+    ]
+   },
+   "put": {
+    "operationId": "CafeController_setTheme",
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ThemeDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe"
+    ]
+   }
+  },
+  "/api/v1/cafe/banners": {
+   "post": {
+    "operationId": "CafeController_banner",
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/CreateBannerDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe"
+    ]
+   }
+  },
+  "/api/v1/cafe/banners/{id}": {
+   "delete": {
+    "operationId": "CafeController_delBanner",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe"
+    ]
+   }
+  },
+  "/api/v1/cafe/media": {
+   "post": {
+    "operationId": "CafeController_upload",
+    "parameters": [
+     {
+      "name": "kind",
+      "required": true,
+      "in": "query",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe"
+    ]
+   }
+  },
+  "/api/v1/public/cafes/{slug}/menu": {
+   "get": {
+    "operationId": "PublicMenuController_menu",
+    "parameters": [
+     {
+      "name": "slug",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "lang",
+      "required": true,
+      "in": "query",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "branch",
+      "required": true,
+      "in": "query",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "tags": [
+     "public"
+    ]
+   }
+  },
+  "/api/v1/cafe/menu": {
+   "get": {
+    "operationId": "CatalogController_menu",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-menu"
+    ]
+   }
+  },
+  "/api/v1/cafe/categories": {
+   "get": {
+    "operationId": "CatalogController_categories",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-menu"
+    ]
+   },
+   "post": {
+    "operationId": "CatalogController_createCategory",
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/CreateCategoryDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-menu"
+    ]
+   }
+  },
+  "/api/v1/cafe/categories/{id}": {
+   "patch": {
+    "operationId": "CatalogController_updateCategory",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/UpdateCategoryDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-menu"
+    ]
+   },
+   "delete": {
+    "operationId": "CatalogController_deleteCategory",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-menu"
+    ]
+   }
+  },
+  "/api/v1/cafe/products": {
+   "post": {
+    "operationId": "CatalogController_createProduct",
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/CreateProductDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-menu"
+    ]
+   }
+  },
+  "/api/v1/cafe/products/{id}": {
+   "patch": {
+    "operationId": "CatalogController_updateProduct",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/UpdateProductDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-menu"
+    ]
+   },
+   "delete": {
+    "operationId": "CatalogController_deleteProduct",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-menu"
+    ]
+   }
+  },
+  "/api/v1/cafe/products/{id}/variants": {
+   "post": {
+    "operationId": "CatalogController_addVariant",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/VariantDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-menu"
+    ]
+   }
+  },
+  "/api/v1/cafe/variants/{id}": {
+   "delete": {
+    "operationId": "CatalogController_delVariant",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-menu"
+    ]
+   }
+  },
+  "/api/v1/cafe/products/{id}/images": {
+   "post": {
+    "operationId": "CatalogController_addImage",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/AssetDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-menu"
+    ]
+   }
+  },
+  "/api/v1/cafe/addon-groups": {
+   "post": {
+    "operationId": "CatalogController_addonGroup",
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/AddonGroupDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-menu"
+    ]
+   }
+  },
+  "/api/v1/cafe/products/{id}/addon-groups": {
+   "put": {
+    "operationId": "CatalogController_linkGroups",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/IdsDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-menu"
+    ]
+   }
+  },
+  "/api/v1/cafe/products/{id}/combo-items": {
+   "put": {
+    "operationId": "CatalogController_combo",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ComboDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-menu"
+    ]
+   }
+  },
+  "/api/v1/cafe/products/{id}/schedules": {
+   "put": {
+    "operationId": "CatalogController_schedules",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ScheduleDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-menu"
+    ]
+   }
+  },
+  "/api/v1/cafe/branches/{branch}/product-overrides/{product}": {
+   "put": {
+    "operationId": "CatalogController_override",
+    "parameters": [
+     {
+      "name": "branch",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "product",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/OverrideDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-menu"
+    ]
+   }
+  },
+  "/api/v1/cafe/tax-categories": {
+   "get": {
+    "operationId": "CatalogController_taxCategories",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-menu"
+    ]
+   },
+   "post": {
+    "operationId": "CatalogController_createTaxCategory",
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/TaxCategoryDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-menu"
+    ]
+   }
+  },
+  "/api/v1/cafe/tax-categories/{code}/rates": {
+   "post": {
+    "operationId": "CatalogController_addRate",
+    "parameters": [
+     {
+      "name": "code",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/TaxRateDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-menu"
+    ]
+   }
+  },
+  "/api/v1/cafe/tax-registrations": {
+   "post": {
+    "operationId": "CatalogController_addRegistration",
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/TaxRegistrationDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-menu"
+    ]
+   }
+  },
+  "/api/v1/public/qr/{token}": {
+   "get": {
+    "operationId": "PublicQrController_resolve",
+    "parameters": [
+     {
+      "name": "token",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "lang",
+      "required": true,
+      "in": "query",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "tags": [
+     "public"
+    ]
+   }
+  },
+  "/api/v1/customer/service-requests": {
+   "post": {
+    "operationId": "SessionServiceController_request",
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ServiceRequestDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "tags": [
+     "customer"
+    ]
+   }
+  },
+  "/api/v1/cafe/tables": {
+   "get": {
+    "operationId": "TablesController_list",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-tables"
+    ]
+   },
+   "post": {
+    "operationId": "TablesController_create",
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/CreateTableDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-tables"
+    ]
+   }
+  },
+  "/api/v1/cafe/tables/{id}": {
+   "patch": {
+    "operationId": "TablesController_update",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/UpdateTableDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-tables"
+    ]
+   },
+   "delete": {
+    "operationId": "TablesController_remove",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-tables"
+    ]
+   }
+  },
+  "/api/v1/cafe/tables/{id}/qr": {
+   "get": {
+    "operationId": "TablesController_qr",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-tables"
+    ]
+   }
+  },
+  "/api/v1/cafe/tables/{id}/qr/regenerate": {
+   "post": {
+    "operationId": "TablesController_regen",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-tables"
+    ]
+   }
+  },
+  "/api/v1/cafe/table-sessions": {
+   "get": {
+    "operationId": "TablesController_sessions",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-tables"
+    ]
+   }
+  },
+  "/api/v1/cafe/table-sessions/{id}/close": {
+   "post": {
+    "operationId": "TablesController_close",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-tables"
+    ]
+   }
+  },
+  "/api/v1/cafe/table-sessions/{id}/merge": {
+   "post": {
+    "operationId": "TablesController_merge",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/MergeDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-tables"
+    ]
+   }
+  },
+  "/api/v1/cafe/orders/{id}/transfer": {
+   "post": {
+    "operationId": "TablesController_transfer",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/TransferDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-tables"
+    ]
+   }
+  },
+  "/api/v1/cafe/service-requests": {
+   "get": {
+    "operationId": "TablesController_requests",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-tables"
+    ]
+   }
+  },
+  "/api/v1/cafe/service-requests/{id}": {
+   "patch": {
+    "operationId": "TablesController_updateRequest",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ServiceStatusDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-tables"
+    ]
+   }
+  },
+  "/api/v1/cafe/reservations": {
+   "get": {
+    "operationId": "TablesController_reservations",
+    "parameters": [
+     {
+      "name": "from",
+      "required": true,
+      "in": "query",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-tables"
+    ]
+   },
+   "post": {
+    "operationId": "TablesController_reserve",
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ReservationDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-tables"
+    ]
+   }
+  },
+  "/api/v1/cafe/reservations/{id}": {
+   "patch": {
+    "operationId": "TablesController_reservationStatus",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ReservationStatusDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-tables"
+    ]
+   }
+  },
+  "/api/v1/customer/orders": {
+   "post": {
+    "operationId": "CustomerOrderController_place",
+    "parameters": [
+     {
+      "name": "idempotency-key",
+      "required": true,
+      "in": "header",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/PlaceOrderDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "tags": [
+     "customer-orders"
+    ]
+   },
+   "get": {
+    "operationId": "CustomerOrderController_list",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "tags": [
+     "customer-orders"
+    ]
+   }
+  },
+  "/api/v1/customer/orders/{id}": {
+   "get": {
+    "operationId": "CustomerOrderController_get",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "tags": [
+     "customer-orders"
+    ]
+   }
+  },
+  "/api/v1/customer/coupons/validate": {
+   "post": {
+    "operationId": "CustomerOrderController_coupon",
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/CouponCheckDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "tags": [
+     "customer-orders"
+    ]
+   }
+  },
+  "/api/v1/customer/recent-items": {
+   "get": {
+    "operationId": "CustomerOrderController_recent",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "tags": [
+     "customer-orders"
+    ]
+   }
+  },
+  "/api/v1/customer/history": {
+   "get": {
+    "operationId": "CustomerHistoryController_history",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "customer-history"
+    ]
+   }
+  },
+  "/api/v1/cafe/orders": {
+   "get": {
+    "operationId": "CafeOrderController_list",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-orders"
+    ]
+   },
+   "post": {
+    "operationId": "CafeOrderController_create",
+    "parameters": [
+     {
+      "name": "idempotency-key",
+      "required": true,
+      "in": "header",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/StaffOrderDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-orders"
+    ]
+   }
+  },
+  "/api/v1/cafe/orders/{id}": {
+   "get": {
+    "operationId": "CafeOrderController_get",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-orders"
+    ]
+   }
+  },
+  "/api/v1/cafe/orders/{id}/status": {
+   "post": {
+    "operationId": "CafeOrderController_status",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/TransitionDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-orders"
+    ]
+   }
+  },
+  "/api/v1/cafe/orders/{id}/items/{itemId}": {
+   "patch": {
+    "operationId": "CafeOrderController_modify",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "itemId",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "number"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ModifyItemDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-orders"
+    ]
+   }
+  },
+  "/api/v1/kitchen/tickets": {
+   "get": {
+    "operationId": "KitchenController_tickets",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "kitchen"
+    ]
+   }
+  },
+  "/api/v1/kitchen/tickets/{id}/status": {
+   "post": {
+    "operationId": "KitchenController_status",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/TicketStatusDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "kitchen"
+    ]
+   }
+  },
+  "/api/v1/kitchen/tickets/{id}/priority": {
+   "post": {
+    "operationId": "KitchenController_priority",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/PriorityDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "kitchen"
+    ]
+   }
+  },
+  "/api/v1/kitchen/branches": {
+   "get": {
+    "operationId": "KitchenController_branches",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "kitchen"
+    ]
+   }
+  },
+  "/api/v1/kitchen/stations": {
+   "get": {
+    "operationId": "KitchenController_stations",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "kitchen"
+    ]
+   }
+  },
+  "/api/v1/cafe/kitchen/stations": {
+   "post": {
+    "operationId": "KitchenConfigController_create",
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/StationDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-kitchen"
+    ]
+   }
+  },
+  "/api/v1/cafe/kitchen/stations/{id}": {
+   "patch": {
+    "operationId": "KitchenConfigController_update",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/UpdateStationDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-kitchen"
+    ]
+   }
+  },
+  "/api/v1/cafe/kitchen/products/{id}/station": {
+   "put": {
+    "operationId": "KitchenConfigController_route",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/RouteDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-kitchen"
+    ]
+   }
+  },
+  "/api/v1/webhooks/payments/{provider}/{account}": {
+   "post": {
+    "operationId": "WebhookController_handle",
+    "parameters": [
+     {
+      "name": "provider",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "account",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "tags": [
+     "webhooks"
+    ]
+   }
+  },
+  "/api/v1/customer/orders/{id}/payments": {
+   "post": {
+    "operationId": "CustomerPaymentController_pay",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "idempotency-key",
+      "required": true,
+      "in": "header",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/InitiatePaymentDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "tags": [
+     "customer-payments"
+    ]
+   }
+  },
+  "/api/v1/customer/payments/{id}/verify": {
+   "post": {
+    "operationId": "CustomerPaymentController_verify",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/VerifyCallbackDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "tags": [
+     "customer-payments"
+    ]
+   }
+  },
+  "/api/v1/customer/payments/{id}/abandon": {
+   "post": {
+    "operationId": "CustomerPaymentController_abandon",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "tags": [
+     "customer-payments"
+    ]
+   }
+  },
+  "/api/v1/customer/payments/{id}": {
+   "get": {
+    "operationId": "CustomerPaymentController_status",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "tags": [
+     "customer-payments"
+    ]
+   }
+  },
+  "/api/v1/customer/payment-options": {
+   "get": {
+    "operationId": "CustomerPaymentController_options",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "tags": [
+     "customer-payments"
+    ]
+   }
+  },
+  "/api/v1/cafe/payments": {
+   "get": {
+    "operationId": "CafePaymentController_list",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-payments"
+    ]
+   }
+  },
+  "/api/v1/cafe/payments/cash": {
+   "post": {
+    "operationId": "CafePaymentController_cash",
+    "parameters": [
+     {
+      "name": "idempotency-key",
+      "required": true,
+      "in": "header",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/CashDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-payments"
+    ]
+   }
+  },
+  "/api/v1/cafe/orders/{id}/payment-link": {
+   "post": {
+    "operationId": "CafePaymentController_link",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "idempotency-key",
+      "required": true,
+      "in": "header",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/PaymentLinkDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-payments"
+    ]
+   }
+  },
+  "/api/v1/cafe/payments/{id}/refunds": {
+   "post": {
+    "operationId": "CafePaymentController_refund",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "idempotency-key",
+      "required": true,
+      "in": "header",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/RefundDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-payments"
+    ]
+   }
+  },
+  "/api/v1/cafe/refunds": {
+   "get": {
+    "operationId": "CafePaymentController_refunds",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-payments"
+    ]
+   }
+  },
+  "/api/v1/cafe/refunds/{id}/approve": {
+   "post": {
+    "operationId": "CafePaymentController_approve",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-payments"
+    ]
+   }
+  },
+  "/api/v1/cafe/bills/split": {
+   "post": {
+    "operationId": "CafePaymentController_split",
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/SplitDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-payments"
+    ]
+   }
+  },
+  "/api/v1/cafe/gateway-accounts": {
+   "get": {
+    "operationId": "CafePaymentController_accounts",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-payments"
+    ]
+   },
+   "put": {
+    "operationId": "CafePaymentController_save",
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/GatewayAccountDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-payments"
+    ]
+   }
+  },
+  "/api/v1/cafe/gateway-accounts/{id}/test": {
+   "post": {
+    "operationId": "CafePaymentController_test",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-payments"
+    ]
+   }
+  },
+  "/api/v1/cafe/payment-methods": {
+   "get": {
+    "operationId": "CafePaymentController_methods",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-payments"
+    ]
+   },
+   "put": {
+    "operationId": "CafePaymentController_setMethods",
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/MethodsDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-payments"
+    ]
+   }
+  },
+  "/api/v1/cafe/settlements": {
+   "get": {
+    "operationId": "CafePaymentController_settlements",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-payments"
+    ]
+   }
+  },
+  "/api/v1/cafe/settlements/sync": {
+   "post": {
+    "operationId": "CafePaymentController_sync",
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/SyncDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-payments"
+    ]
+   }
+  },
+  "/api/v1/cafe/invoices": {
+   "get": {
+    "operationId": "CafePaymentController_invoiceList",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-payments"
+    ]
+   }
+  },
+  "/api/v1/cafe/invoices/{id}": {
+   "get": {
+    "operationId": "CafePaymentController_invoice",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-payments"
+    ]
+   }
+  },
+  "/api/v1/cafe/invoices/{id}/pdf": {
+   "get": {
+    "operationId": "CafePaymentController_pdf",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-payments"
+    ]
+   }
+  },
+  "/api/v1/cafe/ingredients": {
+   "get": {
+    "operationId": "InventoryController_ingredients",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-inventory"
+    ]
+   },
+   "post": {
+    "operationId": "InventoryController_createIngredient",
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/IngredientDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-inventory"
+    ]
+   }
+  },
+  "/api/v1/cafe/ingredients/{id}": {
+   "delete": {
+    "operationId": "InventoryController_deleteIngredient",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-inventory"
+    ]
+   }
+  },
+  "/api/v1/cafe/products/{id}/recipe": {
+   "get": {
+    "operationId": "InventoryController_recipe",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-inventory"
+    ]
+   },
+   "put": {
+    "operationId": "InventoryController_setRecipe",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/RecipeDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-inventory"
+    ]
+   }
+  },
+  "/api/v1/cafe/stock": {
+   "get": {
+    "operationId": "InventoryController_stock",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-inventory"
+    ]
+   }
+  },
+  "/api/v1/cafe/stock/movements": {
+   "post": {
+    "operationId": "InventoryController_move",
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/StockMoveDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-inventory"
+    ]
+   },
+   "get": {
+    "operationId": "InventoryController_movements",
+    "parameters": [
+     {
+      "name": "ingredient",
+      "required": true,
+      "in": "query",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-inventory"
+    ]
+   }
+  },
+  "/api/v1/cafe/stock/valuation": {
+   "get": {
+    "operationId": "InventoryController_valuation",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-inventory"
+    ]
+   }
+  },
+  "/api/v1/cafe/stock/expiring": {
+   "get": {
+    "operationId": "InventoryController_expiring",
+    "parameters": [
+     {
+      "name": "days",
+      "required": true,
+      "in": "query",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-inventory"
+    ]
+   }
+  },
+  "/api/v1/cafe/stock/{ingredient}/reorder-level": {
+   "patch": {
+    "operationId": "InventoryController_reorder",
+    "parameters": [
+     {
+      "name": "ingredient",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ReorderDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-inventory"
+    ]
+   }
+  },
+  "/api/v1/cafe/suppliers": {
+   "get": {
+    "operationId": "InventoryController_suppliers",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-inventory"
+    ]
+   },
+   "post": {
+    "operationId": "InventoryController_supplier",
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/SupplierDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-inventory"
+    ]
+   }
+  },
+  "/api/v1/cafe/suppliers/{id}": {
+   "delete": {
+    "operationId": "InventoryController_delSupplier",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-inventory"
+    ]
+   }
+  },
+  "/api/v1/cafe/purchase-orders": {
+   "get": {
+    "operationId": "InventoryController_pos",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-inventory"
+    ]
+   },
+   "post": {
+    "operationId": "InventoryController_po",
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/PurchaseOrderDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-inventory"
+    ]
+   }
+  },
+  "/api/v1/cafe/purchase-orders/{id}": {
+   "get": {
+    "operationId": "InventoryController_getPo",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-inventory"
+    ]
+   }
+  },
+  "/api/v1/cafe/purchase-orders/{id}/receive": {
+   "post": {
+    "operationId": "InventoryController_receive",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ReceiveDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-inventory"
+    ]
+   }
+  },
+  "/api/v1/cafe/supplier-invoices": {
+   "get": {
+    "operationId": "InventoryController_invoices",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-inventory"
+    ]
+   },
+   "post": {
+    "operationId": "InventoryController_invoice",
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/SupplierInvoiceDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-inventory"
+    ]
+   }
+  },
+  "/api/v1/cafe/supplier-invoices/{id}/payments": {
+   "post": {
+    "operationId": "InventoryController_payInvoice",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/SupplierPaymentDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-inventory"
+    ]
+   }
+  },
+  "/api/v1/cafe/expense-categories": {
+   "get": {
+    "operationId": "FinanceController_cats",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-finance"
+    ]
+   },
+   "post": {
+    "operationId": "FinanceController_createCat",
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/NameDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-finance"
+    ]
+   }
+  },
+  "/api/v1/cafe/expenses": {
+   "get": {
+    "operationId": "FinanceController_expenses",
+    "parameters": [
+     {
+      "name": "from",
+      "required": true,
+      "in": "query",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "to",
+      "required": true,
+      "in": "query",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-finance"
+    ]
+   },
+   "post": {
+    "operationId": "FinanceController_expense",
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ExpenseDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-finance"
+    ]
+   }
+  },
+  "/api/v1/cafe/expenses/{id}/void": {
+   "post": {
+    "operationId": "FinanceController_voidExpense",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ReasonDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-finance"
+    ]
+   }
+  },
+  "/api/v1/cafe/cash-registers": {
+   "get": {
+    "operationId": "FinanceController_registers",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-finance"
+    ]
+   },
+   "post": {
+    "operationId": "FinanceController_createRegister",
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/NameDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-finance"
+    ]
+   }
+  },
+  "/api/v1/cafe/cash-registers/{id}/open": {
+   "post": {
+    "operationId": "FinanceController_open",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/OpenRegisterDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-finance"
+    ]
+   }
+  },
+  "/api/v1/cafe/cash-register-sessions/{id}/transactions": {
+   "post": {
+    "operationId": "FinanceController_tx",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/RegisterTxDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-finance"
+    ]
+   }
+  },
+  "/api/v1/cafe/cash-register-sessions/{id}/close": {
+   "post": {
+    "operationId": "FinanceController_close",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/CloseRegisterDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-finance"
+    ]
+   }
+  },
+  "/api/v1/cafe/payroll": {
+   "get": {
+    "operationId": "FinanceController_payroll",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-finance"
+    ]
+   },
+   "post": {
+    "operationId": "FinanceController_createPayroll",
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/PayrollDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-finance"
+    ]
+   }
+  },
+  "/api/v1/cafe/payroll/{id}/pay": {
+   "post": {
+    "operationId": "FinanceController_pay",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/PayPayrollDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-finance"
+    ]
+   }
+  },
+  "/api/v1/cafe/accounts": {
+   "get": {
+    "operationId": "FinanceController_accounts",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-finance"
+    ]
+   },
+   "post": {
+    "operationId": "FinanceController_account",
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/AccountDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-finance"
+    ]
+   }
+  },
+  "/api/v1/cafe/financial-periods": {
+   "get": {
+    "operationId": "FinanceController_periods",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-finance"
+    ]
+   },
+   "post": {
+    "operationId": "FinanceController_period",
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/PeriodDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-finance"
+    ]
+   }
+  },
+  "/api/v1/cafe/financial-periods/{id}/close": {
+   "post": {
+    "operationId": "FinanceController_closePeriod",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "number"
+      }
+     }
+    ],
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-finance"
+    ]
+   }
+  },
+  "/api/v1/cafe/journal-entries": {
+   "get": {
+    "operationId": "FinanceController_entries",
+    "parameters": [
+     {
+      "name": "from",
+      "required": true,
+      "in": "query",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "to",
+      "required": true,
+      "in": "query",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-finance"
+    ]
+   },
+   "post": {
+    "operationId": "FinanceController_entry",
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/JournalDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-finance"
+    ]
+   }
+  },
+  "/api/v1/cafe/journal-entries/{id}/reverse": {
+   "post": {
+    "operationId": "FinanceController_reverse",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "number"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ReverseDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-finance"
+    ]
+   }
+  },
+  "/api/v1/cafe/reports/sales": {
+   "get": {
+    "operationId": "FinanceController_sales",
+    "parameters": [
+     {
+      "name": "from",
+      "required": true,
+      "in": "query",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "to",
+      "required": true,
+      "in": "query",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "group",
+      "required": true,
+      "in": "query",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-finance"
+    ]
+   }
+  },
+  "/api/v1/cafe/reports/payments": {
+   "get": {
+    "operationId": "FinanceController_payments",
+    "parameters": [
+     {
+      "name": "from",
+      "required": true,
+      "in": "query",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "to",
+      "required": true,
+      "in": "query",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-finance"
+    ]
+   }
+  },
+  "/api/v1/cafe/reports/pnl": {
+   "get": {
+    "operationId": "FinanceController_pnl",
+    "parameters": [
+     {
+      "name": "from",
+      "required": true,
+      "in": "query",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "to",
+      "required": true,
+      "in": "query",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-finance"
+    ]
+   }
+  },
+  "/api/v1/cafe/reports/trial-balance": {
+   "get": {
+    "operationId": "FinanceController_trial",
+    "parameters": [
+     {
+      "name": "from",
+      "required": true,
+      "in": "query",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "to",
+      "required": true,
+      "in": "query",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-finance"
+    ]
+   }
+  },
+  "/api/v1/cafe/reports/balance-sheet": {
+   "get": {
+    "operationId": "FinanceController_balance",
+    "parameters": [
+     {
+      "name": "asOf",
+      "required": true,
+      "in": "query",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-finance"
+    ]
+   }
+  },
+  "/api/v1/cafe/reports/food-cost": {
+   "get": {
+    "operationId": "FinanceController_food",
+    "parameters": [
+     {
+      "name": "from",
+      "required": true,
+      "in": "query",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "to",
+      "required": true,
+      "in": "query",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-finance"
+    ]
+   }
+  },
+  "/api/v1/cafe/audit-logs": {
+   "get": {
+    "operationId": "FinanceController_audit",
+    "parameters": [
+     {
+      "name": "from",
+      "required": true,
+      "in": "query",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-finance"
+    ]
+   }
+  },
+  "/api/v1/cafe/reports/{type}/export": {
+   "get": {
+    "operationId": "FinanceController_exportReport",
+    "parameters": [
+     {
+      "name": "type",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "format",
+      "required": true,
+      "in": "query",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "from",
+      "required": true,
+      "in": "query",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "to",
+      "required": true,
+      "in": "query",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-finance"
+    ]
+   }
+  },
+  "/api/v1/cafe/staff": {
+   "get": {
+    "operationId": "StaffController_list",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-staff"
+    ]
+   },
+   "post": {
+    "operationId": "StaffController_invite",
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/InviteDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-staff"
+    ]
+   }
+  },
+  "/api/v1/cafe/staff/{id}": {
+   "patch": {
+    "operationId": "StaffController_update",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/UpdateStaffDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-staff"
+    ]
+   }
+  },
+  "/api/v1/cafe/roles": {
+   "get": {
+    "operationId": "StaffController_roles",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-staff"
+    ]
+   },
+   "put": {
+    "operationId": "StaffController_saveRole",
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/RoleDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-staff"
+    ]
+   }
+  },
+  "/api/v1/cafe/permissions": {
+   "get": {
+    "operationId": "StaffController_permissions",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-staff"
+    ]
+   }
+  },
+  "/api/v1/cafe/attendance/clock-in": {
+   "post": {
+    "operationId": "StaffController_clockIn",
+    "parameters": [],
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-staff"
+    ]
+   }
+  },
+  "/api/v1/cafe/attendance/clock-out": {
+   "post": {
+    "operationId": "StaffController_clockOut",
+    "parameters": [],
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-staff"
+    ]
+   }
+  },
+  "/api/v1/cafe/attendance": {
+   "get": {
+    "operationId": "StaffController_attendance",
+    "parameters": [
+     {
+      "name": "from",
+      "required": true,
+      "in": "query",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "to",
+      "required": true,
+      "in": "query",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-staff"
+    ]
+   }
+  },
+  "/api/v1/cafe/staff-performance": {
+   "get": {
+    "operationId": "StaffController_performance",
+    "parameters": [
+     {
+      "name": "from",
+      "required": true,
+      "in": "query",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "to",
+      "required": true,
+      "in": "query",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-staff"
+    ]
+   }
+  },
+  "/api/v1/customer/profile": {
+   "get": {
+    "operationId": "CustomerAccountController_profile",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "customer-account"
+    ]
+   },
+   "patch": {
+    "operationId": "CustomerAccountController_update",
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ProfileDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "customer-account"
+    ]
+   }
+  },
+  "/api/v1/customer/account": {
+   "delete": {
+    "operationId": "CustomerAccountController_remove",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "customer-account"
+    ]
+   }
+  },
+  "/api/v1/customer/addresses": {
+   "get": {
+    "operationId": "CustomerAccountController_addresses",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "customer-account"
+    ]
+   },
+   "post": {
+    "operationId": "CustomerAccountController_addAddress",
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/AddressDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "customer-account"
+    ]
+   }
+  },
+  "/api/v1/customer/addresses/{id}": {
+   "delete": {
+    "operationId": "CustomerAccountController_removeAddress",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "customer-account"
+    ]
+   }
+  },
+  "/api/v1/customer/favorites": {
+   "get": {
+    "operationId": "CustomerAccountController_favorites",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "customer-account"
+    ]
+   }
+  },
+  "/api/v1/customer/favorites/{slug}": {
+   "post": {
+    "operationId": "CustomerAccountController_favorite",
+    "parameters": [
+     {
+      "name": "slug",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "customer-account"
+    ]
+   },
+   "delete": {
+    "operationId": "CustomerAccountController_unfavorite",
+    "parameters": [
+     {
+      "name": "slug",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "customer-account"
+    ]
+   }
+  },
+  "/api/v1/customer/cafes/{slug}/wishlist": {
+   "get": {
+    "operationId": "CustomerAccountController_wishlist",
+    "parameters": [
+     {
+      "name": "slug",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "customer-account"
+    ]
+   }
+  },
+  "/api/v1/customer/cafes/{slug}/wishlist/{product}": {
+   "post": {
+    "operationId": "CustomerAccountController_wish",
+    "parameters": [
+     {
+      "name": "slug",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "product",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "customer-account"
+    ]
+   },
+   "delete": {
+    "operationId": "CustomerAccountController_unwish",
+    "parameters": [
+     {
+      "name": "slug",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "product",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "customer-account"
+    ]
+   }
+  },
+  "/api/v1/customer/cafes/{slug}/loyalty": {
+   "get": {
+    "operationId": "CustomerAccountController_loyalty",
+    "parameters": [
+     {
+      "name": "slug",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "customer-account"
+    ]
+   }
+  },
+  "/api/v1/customer/cafes/{slug}/reservations": {
+   "post": {
+    "operationId": "CustomerAccountController_reserve",
+    "parameters": [
+     {
+      "name": "slug",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/CustomerReservationDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "customer-account"
+    ]
+   }
+  },
+  "/api/v1/cafe/customers": {
+   "get": {
+    "operationId": "CafeCustomersController_list",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-customers"
+    ]
+   }
+  },
+  "/api/v1/cafe/coupons": {
+   "get": {
+    "operationId": "MarketingController_coupons",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-marketing"
+    ]
+   },
+   "post": {
+    "operationId": "MarketingController_coupon",
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/CouponDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-marketing"
+    ]
+   }
+  },
+  "/api/v1/cafe/coupons/{id}": {
+   "patch": {
+    "operationId": "MarketingController_toggle",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ToggleDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-marketing"
+    ]
+   },
+   "delete": {
+    "operationId": "MarketingController_del",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-marketing"
+    ]
+   }
+  },
+  "/api/v1/cafe/promotions": {
+   "get": {
+    "operationId": "MarketingController_promotions",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-marketing"
+    ]
+   },
+   "post": {
+    "operationId": "MarketingController_promotion",
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/PromotionDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-marketing"
+    ]
+   }
+  },
+  "/api/v1/cafe/promotions/{id}": {
+   "delete": {
+    "operationId": "MarketingController_delPromo",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-marketing"
+    ]
+   }
+  },
+  "/api/v1/cafe/loyalty-program": {
+   "get": {
+    "operationId": "MarketingController_loyalty",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-marketing"
+    ]
+   },
+   "put": {
+    "operationId": "MarketingController_saveLoyalty",
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/LoyaltyDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-marketing"
+    ]
+   }
+  },
+  "/api/v1/cafe/reviews": {
+   "get": {
+    "operationId": "MarketingController_reviews",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-marketing"
+    ]
+   }
+  },
+  "/api/v1/cafe/reviews/{id}/reply": {
+   "post": {
+    "operationId": "MarketingController_reply",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ReplyDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-marketing"
+    ]
+   }
+  },
+  "/api/v1/customer/orders/{id}/review": {
+   "post": {
+    "operationId": "CustomerReviewController_review",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ReviewDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "tags": [
+     "customer-reviews"
+    ]
+   }
+  },
+  "/api/v1/notifications": {
+   "get": {
+    "operationId": "NotificationsController_list",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "notifications"
+    ]
+   }
+  },
+  "/api/v1/notifications/{id}/read": {
+   "post": {
+    "operationId": "NotificationsController_read",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "notifications"
+    ]
+   }
+  },
+  "/api/v1/notifications/devices": {
+   "post": {
+    "operationId": "NotificationsController_device",
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/DeviceDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "notifications"
+    ]
+   }
+  },
+  "/api/v1/cafe/notification-preferences": {
+   "get": {
+    "operationId": "NotificationPrefsController_get",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-notifications"
+    ]
+   },
+   "put": {
+    "operationId": "NotificationPrefsController_set",
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/PreferenceDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-notifications"
+    ]
+   }
+  },
+  "/api/v1/cafe/subscription": {
+   "get": {
+    "operationId": "CafeSubscriptionController_current",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-subscription"
+    ]
+   },
+   "post": {
+    "operationId": "CafeSubscriptionController_subscribe",
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/SubscribeDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-subscription"
+    ]
+   }
+  },
+  "/api/v1/cafe/subscription/plans": {
+   "get": {
+    "operationId": "CafeSubscriptionController_plans",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-subscription"
+    ]
+   }
+  },
+  "/api/v1/cafe/subscription/invoices": {
+   "get": {
+    "operationId": "CafeSubscriptionController_invoices",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-subscription"
+    ]
+   }
+  },
+  "/api/v1/cafe/subscription/change": {
+   "post": {
+    "operationId": "CafeSubscriptionController_change",
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ChangePlanDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-subscription"
+    ]
+   }
+  },
+  "/api/v1/cafe/subscription/cancel": {
+   "post": {
+    "operationId": "CafeSubscriptionController_cancel",
+    "parameters": [],
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-subscription"
+    ]
+   }
+  },
+  "/api/v1/platform/plans": {
+   "get": {
+    "operationId": "PlatformPlanController_plans",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "platform-plans"
+    ]
+   }
+  },
+  "/api/v1/platform/plans/{code}": {
+   "put": {
+    "operationId": "PlatformPlanController_save",
+    "parameters": [
+     {
+      "name": "code",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/SavePlanDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "platform-plans"
+    ]
+   }
+  },
+  "/api/v1/platform/subscription-invoices/{id}/paid": {
+   "post": {
+    "operationId": "PlatformPlanController_paid",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/MarkPaidDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "platform-plans"
+    ]
+   }
+  },
+  "/api/v1/cafe/analytics": {
+   "get": {
+    "operationId": "CafeAnalyticsController_dashboard",
+    "parameters": [
+     {
+      "name": "from",
+      "required": true,
+      "in": "query",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "to",
+      "required": true,
+      "in": "query",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-analytics"
+    ]
+   }
+  },
+  "/api/v1/platform/analytics": {
+   "get": {
+    "operationId": "PlatformAnalyticsController_dashboard",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "platform-analytics"
+    ]
+   }
+  },
+  "/api/v1/platform/analytics/consolidated": {
+   "get": {
+    "operationId": "PlatformAnalyticsController_consolidated",
+    "parameters": [
+     {
+      "name": "currency",
+      "required": true,
+      "in": "query",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "asOf",
+      "required": true,
+      "in": "query",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "platform-analytics"
+    ]
+   }
+  },
+  "/api/v1/health": {
+   "get": {
+    "operationId": "HealthController_ping",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "tags": [
+     "health"
+    ]
+   }
+  },
+  "/api/v1/platform/cafes": {
+   "get": {
+    "operationId": "PlatformController_cafes",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "platform"
+    ]
+   }
+  },
+  "/api/v1/platform/cafes/{id}": {
+   "get": {
+    "operationId": "PlatformController_cafe",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "x-access-reason",
+      "required": true,
+      "in": "header",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "platform"
+    ]
+   }
+  },
+  "/api/v1/platform/cafes/{id}/orders": {
+   "get": {
+    "operationId": "PlatformController_cafeOrders",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "x-access-reason",
+      "required": true,
+      "in": "header",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "platform"
+    ]
+   }
+  },
+  "/api/v1/platform/cafes/{id}/finance": {
+   "get": {
+    "operationId": "PlatformController_cafeFinance",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "x-access-reason",
+      "required": true,
+      "in": "header",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "platform"
+    ]
+   }
+  },
+  "/api/v1/platform/cafes/{id}/status": {
+   "post": {
+    "operationId": "PlatformController_status",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/CafeStatusDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "platform"
+    ]
+   }
+  },
+  "/api/v1/platform/users": {
+   "get": {
+    "operationId": "PlatformController_users",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "platform"
+    ]
+   }
+  },
+  "/api/v1/platform/users/{id}/status": {
+   "post": {
+    "operationId": "PlatformController_userStatus",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/UserStatusDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "platform"
+    ]
+   }
+  },
+  "/api/v1/platform/languages": {
+   "get": {
+    "operationId": "PlatformController_languages",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "platform"
+    ]
+   },
+   "put": {
+    "operationId": "PlatformController_language",
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/LanguageDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "platform"
+    ]
+   }
+  },
+  "/api/v1/platform/currencies": {
+   "get": {
+    "operationId": "PlatformController_currencies",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "platform"
+    ]
+   },
+   "put": {
+    "operationId": "PlatformController_currency",
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/CurrencyDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "platform"
+    ]
+   }
+  },
+  "/api/v1/platform/countries": {
+   "get": {
+    "operationId": "PlatformController_countries",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "platform"
+    ]
+   },
+   "put": {
+    "operationId": "PlatformController_country",
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/CountryDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "platform"
+    ]
+   }
+  },
+  "/api/v1/platform/exchange-rates": {
+   "get": {
+    "operationId": "PlatformController_rates",
+    "parameters": [
+     {
+      "name": "base",
+      "required": true,
+      "in": "query",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "platform"
+    ]
+   },
+   "post": {
+    "operationId": "PlatformController_rate",
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ExchangeRateDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "platform"
+    ]
+   }
+  },
+  "/api/v1/platform/translations": {
+   "get": {
+    "operationId": "PlatformController_translations",
+    "parameters": [
+     {
+      "name": "namespace",
+      "required": true,
+      "in": "query",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "language",
+      "required": true,
+      "in": "query",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "platform"
+    ]
+   },
+   "put": {
+    "operationId": "PlatformController_translation",
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/TranslationKeyDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "platform"
+    ]
+   }
+  },
+  "/api/v1/platform/settings": {
+   "get": {
+    "operationId": "PlatformController_settings",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "platform"
+    ]
+   }
+  },
+  "/api/v1/platform/settings/{key}": {
+   "put": {
+    "operationId": "PlatformController_setting",
+    "parameters": [
+     {
+      "name": "key",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/SettingDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "platform"
+    ]
+   }
+  },
+  "/api/v1/platform/commissions": {
+   "get": {
+    "operationId": "PlatformController_commissions",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "platform"
+    ]
+   },
+   "post": {
+    "operationId": "PlatformController_commission",
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/CommissionDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "platform"
+    ]
+   }
+  },
+  "/api/v1/platform/announcements": {
+   "get": {
+    "operationId": "PlatformController_announcements",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "platform"
+    ]
+   },
+   "post": {
+    "operationId": "PlatformController_announce",
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/AnnouncementDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "platform"
+    ]
+   }
+  },
+  "/api/v1/platform/support-tickets": {
+   "get": {
+    "operationId": "PlatformController_tickets",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "platform"
+    ]
+   }
+  },
+  "/api/v1/platform/support-tickets/{id}": {
+   "get": {
+    "operationId": "PlatformController_ticket",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "platform"
+    ]
+   }
+  },
+  "/api/v1/platform/support-tickets/{id}/reply": {
+   "post": {
+    "operationId": "PlatformController_reply",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/TicketReplyDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "platform"
+    ]
+   }
+  },
+  "/api/v1/platform/audit-logs": {
+   "get": {
+    "operationId": "PlatformController_audit",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "platform"
+    ]
+   }
+  },
+  "/api/v1/platform/finance": {
+   "get": {
+    "operationId": "PlatformController_finance",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "platform"
+    ]
+   }
+  },
+  "/api/v1/platform/health": {
+   "get": {
+    "operationId": "PlatformController_health",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "platform"
+    ]
+   }
+  },
+  "/api/v1/cafe/announcements": {
+   "get": {
+    "operationId": "CafePlatformController_announcements",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-platform"
+    ]
+   }
+  },
+  "/api/v1/cafe/support-tickets": {
+   "get": {
+    "operationId": "CafePlatformController_tickets",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-platform"
+    ]
+   },
+   "post": {
+    "operationId": "CafePlatformController_create",
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/NewTicketDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-platform"
+    ]
+   }
+  },
+  "/api/v1/cafe/support-tickets/{id}": {
+   "get": {
+    "operationId": "CafePlatformController_ticket",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-platform"
+    ]
+   }
+  },
+  "/api/v1/cafe/support-tickets/{id}/reply": {
+   "post": {
+    "operationId": "CafePlatformController_reply",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/CafeTicketReplyDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-platform"
+    ]
+   }
+  }
+ },
+ "info": {
+  "title": "Cafe Platform API",
+  "description": "",
+  "version": "1",
+  "contact": {}
+ },
+ "tags": [],
+ "servers": [],
+ "components": {
+  "securitySchemes": {
+   "bearer": {
+    "scheme": "bearer",
+    "bearerFormat": "JWT",
+    "type": "http"
+   }
+  },
+  "schemas": {
+   "LoginDto": {
+    "type": "object",
+    "properties": {
+     "email": {
+      "type": "string"
+     },
+     "password": {
+      "type": "string"
+     },
+     "audience": {
+      "type": "string",
+      "enum": [
+       "platform",
+       "cafe",
+       "kitchen"
+      ]
+     },
+     "cafePublicId": {
+      "type": "string"
+     },
+     "totp": {
+      "type": "string"
+     },
+     "transport": {
+      "type": "string",
+      "enum": [
+       "body",
+       "cookie"
+      ]
+     }
+    },
+    "required": [
+     "email",
+     "password",
+     "audience"
+    ]
+   },
+   "RefreshDto": {
+    "type": "object",
+    "properties": {
+     "refreshToken": {
+      "type": "string"
+     },
+     "transport": {
+      "type": "string",
+      "enum": [
+       "body",
+       "cookie"
+      ]
+     }
+    }
+   },
+   "TotpDto": {
+    "type": "object",
+    "properties": {
+     "code": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "code"
+    ]
+   },
+   "CustomerRegisterDto": {
+    "type": "object",
+    "properties": {
+     "email": {
+      "type": "string"
+     },
+     "password": {
+      "type": "string"
+     },
+     "fullName": {
+      "type": "string"
+     },
+     "language": {
+      "type": "string"
+     },
+     "transport": {
+      "type": "string",
+      "enum": [
+       "body",
+       "cookie"
+      ]
+     }
+    },
+    "required": [
+     "email",
+     "password",
+     "fullName"
+    ]
+   },
+   "CustomerLoginDto": {
+    "type": "object",
+    "properties": {
+     "email": {
+      "type": "string"
+     },
+     "password": {
+      "type": "string"
+     },
+     "transport": {
+      "type": "string",
+      "enum": [
+       "body",
+       "cookie"
+      ]
+     }
+    },
+    "required": [
+     "email",
+     "password"
+    ]
+   },
+   "GoogleDto": {
+    "type": "object",
+    "properties": {
+     "idToken": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "idToken"
+    ]
+   },
+   "AcceptInvitationDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "RegisterCafeDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "UpdateProfileDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "CreateBranchDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "UpdateBranchDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "SetHoursDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "SetLanguagesDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "ThemeDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "CreateBannerDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "CreateCategoryDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "UpdateCategoryDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "CreateProductDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "UpdateProductDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "VariantDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "AssetDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "AddonGroupDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "IdsDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "ComboDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "ScheduleDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "OverrideDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "TaxCategoryDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "TaxRateDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "TaxRegistrationDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "ServiceRequestDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "CreateTableDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "UpdateTableDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "MergeDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "TransferDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "ServiceStatusDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "ReservationDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "ReservationStatusDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "PlaceOrderDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "CouponCheckDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "StaffOrderDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "TransitionDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "ModifyItemDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "TicketStatusDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "PriorityDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "StationDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "UpdateStationDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "RouteDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "InitiatePaymentDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "VerifyCallbackDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "CashDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "PaymentLinkDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "RefundDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "SplitDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "GatewayAccountDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "MethodsDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "SyncDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "IngredientDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "RecipeDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "StockMoveDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "ReorderDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "SupplierDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "PurchaseOrderDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "ReceiveDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "SupplierInvoiceDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "SupplierPaymentDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "NameDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "ExpenseDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "ReasonDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "OpenRegisterDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "RegisterTxDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "CloseRegisterDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "PayrollDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "PayPayrollDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "AccountDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "PeriodDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "JournalDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "ReverseDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "InviteDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "UpdateStaffDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "RoleDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "ProfileDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "AddressDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "CustomerReservationDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "CouponDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "ToggleDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "PromotionDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "LoyaltyDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "ReplyDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "ReviewDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "DeviceDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "PreferenceDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "SubscribeDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "ChangePlanDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "SavePlanDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "MarkPaidDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "CafeStatusDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "UserStatusDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "LanguageDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "CurrencyDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "CountryDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "ExchangeRateDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "TranslationKeyDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "SettingDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "CommissionDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "AnnouncementDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "TicketReplyDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "NewTicketDto": {
+    "type": "object",
+    "properties": {}
+   },
+   "CafeTicketReplyDto": {
+    "type": "object",
+    "properties": {}
+   }
+  }
+ }
+}

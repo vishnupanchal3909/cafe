@@ -1,0 +1,20 @@
+name: shared_design_system
+publish_to: none
+resolution: workspace
+environment:
+  sdk: ^3.8.0
+dependencies:
+  flutter:
+    sdk: flutter
+  shared_core:
+    path: ../shared_core
+  shared_localization:
+    path: ../shared_localization
+  flutter_bloc: ^9.1.0
+  flutter_localizations:
+    sdk: flutter
+  shared_models:
+    path: ../shared_models
+dev_dependencies:
+  flutter_test:
+    sdk: flutter

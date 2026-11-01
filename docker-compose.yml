@@ -1,0 +1,36 @@
+# Local infrastructure. Mirrors scripts/dev-mysql.sh settings.
+services:
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ADMIN_PASSWORD:?set DB_ADMIN_PASSWORD}
+    command:
+      - --default-time-zone=+00:00
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_0900_ai_ci
+      - --log-bin-trust-function-creators=1
+      - --transaction-isolation=READ-COMMITTED
+    ports: ["127.0.0.1:3307:3306"]
+    volumes: [mysql_data:/var/lib/mysql]
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -uroot -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 5s
+      retries: 20
+  redis:
+    image: redis:7.4-alpine
+    ports: ["127.0.0.1:6379:6379"]
+  # Needs backend/.env with DB_*, JWT_* and FIELD_ENCRYPTION_KEY. Run migrations first: npm run db:migrate && db:seed && db:grants
+  api:
+    build: ./backend
+    env_file: ./backend/.env
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      REDIS_URL: redis://redis:6379
+      NODE_ENV: production
+    depends_on:
+      mysql: { condition: service_healthy }
+      redis: { condition: service_started }
+    ports: ["127.0.0.1:3000:3000"]
+volumes:
+  mysql_data:

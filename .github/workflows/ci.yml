@@ -1,0 +1,78 @@
+name: CI
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ROOT_PASSWORD: ci-only-root
+        ports: ["3307:3306"]
+        options: >-
+          --health-cmd="mysqladmin ping -uroot -pci-only-root --silent"
+          --health-interval=5s --health-retries=20
+      redis:
+        image: redis:7.4-alpine
+        ports: ["6379:6379"]
+    env:
+      DB_HOST: 127.0.0.1
+      DB_PORT: 3307
+      DB_ADMIN_USER: root
+      DB_ADMIN_PASSWORD: ci-only-root
+      MYSQL_CLI: mysql
+      TEST_REDIS_URL: redis://127.0.0.1:6379
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+      - run: sudo apt-get update && sudo apt-get install -y mysql-client
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run db:test
+      - run: npm test
+
+  flutter:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - run: flutter pub get
+      - run: dart analyze --fatal-warnings .
+      - name: Test every package and app
+        run: |
+          for p in packages/shared_models packages/shared_network packages/shared_localization packages/shared_design_system apps/cafe_customer_app apps/cafe_kitchen_app apps/cafe_owner_app apps/cafe_admin_app; do
+            (cd "$p" && flutter test) || exit 1
+          done
+      - name: Build every web app
+        run: |
+          for a in customer kitchen owner admin; do
+            (cd "apps/cafe_${a}_app" && flutter build web --release --no-web-resources-cdn) || exit 1
+          done
+
+  guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Banned patterns
+        run: |
+          ! grep -rnE "Text\('[A-Za-z]" frontend/apps/*/lib frontend/packages/shared_design_system/lib
+          ! grep -rnE "\.toDouble\(\)|double\.parse" frontend/apps/cafe_customer_app/lib
+          ! grep -rnE "[₹€£]" frontend/apps/*/lib frontend/packages/shared_design_system/lib

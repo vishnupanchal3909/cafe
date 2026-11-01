@@ -1,0 +1,61 @@
+{
+  "name": "cafe-platform-backend",
+  "version": "0.1.0",
+  "private": true,
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "db:migrate": "node database/scripts/migrate.ts",
+    "db:seed": "node database/scripts/seed.ts",
+    "db:grants": "node database/scripts/grants.ts",
+    "db:docs": "node database/scripts/generate-docs.ts",
+    "db:test": "node --test --test-concurrency=1 database/tests/*.test.ts",
+    "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.build.json",
+    "build": "tsc -p tsconfig.build.json",
+    "start": "node dist/src/main.js",
+    "dev": "tsc -p tsconfig.build.json && node dist/src/main.js",
+    "test": "tsc -p tsconfig.build.json && node --test --test-concurrency=1 'dist/test/**/*.test.js'",
+    "db:types": "kysely-codegen --dialect mysql --url mysql://root@127.0.0.1:3307/cafe_platform --out-file src/infra/db/types.ts",
+    "admin:create": "node dist/src/cli/create-admin.js",
+    "keys:generate": "node database/scripts/generate-keys.ts",
+    "openapi": "tsc -p tsconfig.build.json && API_TEST_DB=cafe_test_openapi node dist/test/export-openapi.js",
+    "razorpay:check": "tsc -p tsconfig.build.json && SKIP_ENV_FILE=1 node dist/test/razorpay-check.js"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.1161.0",
+    "@nestjs/common": "^11.2.8",
+    "@nestjs/core": "^11.2.8",
+    "@nestjs/platform-express": "^11.2.8",
+    "@nestjs/swagger": "^11.4.7",
+    "@socket.io/redis-adapter": "^8.3.0",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.15.1",
+    "decimal.js": "^10.6.0",
+    "exceljs": "^4.4.0",
+    "helmet": "^8.3.0",
+    "ioredis": "^6.0.0",
+    "jose": "^6.2.14",
+    "kysely": "^0.29.8",
+    "multer": "^2.5.0",
+    "mysql2": "^3.24.6",
+    "pdfkit": "^0.20.2",
+    "qrcode": "^1.5.4",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2",
+    "socket.io": "^4.8.4"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/multer": "^2.3.0",
+    "@types/node": "^26.6.6",
+    "@types/pdfkit": "^0.17.7",
+    "@types/qrcode": "^1.5.6",
+    "kysely-codegen": "^0.20.0",
+    "socket.io-client": "^4.8.4",
+    "typescript": "5.9"
+  },
+  "overrides": {
+    "multer": "^2.5.0"
+  }
+}

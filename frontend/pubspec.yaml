@@ -1,0 +1,14 @@
+name: cafe_platform_workspace
+publish_to: none
+environment:
+  sdk: ^3.8.0
+workspace:
+  - packages/shared_core
+  - packages/shared_models
+  - packages/shared_network
+  - packages/shared_localization
+  - packages/shared_design_system
+  - apps/cafe_customer_app
+  - apps/cafe_kitchen_app
+  - apps/cafe_owner_app
+  - apps/cafe_admin_app

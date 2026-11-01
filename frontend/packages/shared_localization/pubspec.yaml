@@ -1,0 +1,19 @@
+name: shared_localization
+publish_to: none
+resolution: workspace
+environment:
+  sdk: ^3.8.0
+dependencies:
+  decimal: ^3.2.1
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  intl: any
+  shared_core:
+    path: ../shared_core
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+flutter:
+  generate: true
