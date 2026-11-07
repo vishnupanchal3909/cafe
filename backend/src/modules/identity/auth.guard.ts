@@ -11,9 +11,12 @@ import { AuthService } from './auth.service';
 export const TABLE_SESSION = 'tableSession';
 export const ALLOW_NO_MFA = 'allowNoMfa';
 export const OPTIONAL_AUTH = 'optionalAuth';
+export const CUSTOMER_LOGIN = 'customerLogin';
 // Route is callable with a table session (QR guest), with or without a customer login.
 export const TableSessionRoute = () => SetMetadata(TABLE_SESSION, true);
 export const AllowNoMfa = () => SetMetadata(ALLOW_NO_MFA, true);
+// On a table-session route: a guest may look, but this action needs a signed-in customer (owner's rule, D-6).
+export const RequiresCustomerLogin = () => SetMetadata(CUSTOMER_LOGIN, true);
 
 // Pipeline: verify token -> live session -> tenant -> permissions -> branch. Default is deny.
 @Injectable()
@@ -39,6 +42,7 @@ export class AuthGuard implements CanActivate {
           s.principal!.id = Number(claims.sub);
         }
       }
+      if (meta<boolean>(CUSTOMER_LOGIN) && !s.principal!.id) throw unauthorized('CUSTOMER_LOGIN_REQUIRED');
       return true;
     }
 

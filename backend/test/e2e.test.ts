@@ -15,6 +15,8 @@ const A = { currency: 'INR', country: 'IN', lang: 'en' };
 let a: Cafe;
 let b: Cafe;
 let adminToken: string;
+// Ordering needs a signed-in customer; browsing does not. One diner places the test orders.
+let diner: string;
 
 async function registerCafe(name: string, currency: string, country: string, lang: string, supported: string[]): Promise<Cafe> {
   const email = `${name.toLowerCase().replace(/\W/g, '')}@example.test`;
@@ -66,6 +68,7 @@ test('1-2. register two cafes with owners, pending approval until the admin acts
   assert.equal(pending.length, 2);
   for (const c of [a, b]) await api.ok(api.post(`/platform/cafes/${c.publicId}/status`, { status: 'active', reason: 'documents checked' }, { token: adminToken }));
   assert.equal((await api.get(`/public/cafes/${a.slug}/config`)).status, 200);
+  diner = (await api.ok(api.post('/customer/auth/register', { email: 'table-diner@example.test', password: 'table diner password', fullName: 'Table Diner' }))).accessToken;
 });
 
 test('3. branding is per cafe, loaded from config, and survives validation', async () => {
@@ -166,15 +169,22 @@ test('10-11. placing an order: server prices it, and the kitchen is notified liv
   kitchenSocket.on('event', (e) => socketEvents.push(e));
   await new Promise<void>((res, rej) => { kitchenSocket.once('ready', () => res()); kitchenSocket.once('connect_error', rej); });
 
+  // A guest at the table may browse but not order: the owner's rule, enforced here and not only in the app.
+  const guest = await api.post('/customer/orders', { items: [{ productId: a.productId, variantId: a.variantId, quantity: 1 }] }, { session: a.session });
+  assert.equal(guest.status, 401);
+  assert.equal(guest.body.error.code, 'CUSTOMER_LOGIN_REQUIRED');
+  assert.equal((await api.post('/customer/orders', { items: [{ productId: a.productId, variantId: a.variantId, quantity: 1 }] }, { session: a.session, token: kitchenToken })).body.error.code, 'CUSTOMER_LOGIN_REQUIRED', 'a staff login is not a customer login');
+  assert.equal((await api.get(`/public/cafes/${a.slug}/menu?lang=en`)).status, 200, 'the menu stays open to guests');
+
   // A client price is refused, not ignored silently: the DTO rejects unknown fields.
-  const tampered = await api.post('/customer/orders', { items: [{ productId: a.productId, variantId: a.variantId, quantity: 1, unitPrice: '1.00' }] }, { session: a.session });
+  const tampered = await api.post('/customer/orders', { items: [{ productId: a.productId, variantId: a.variantId, quantity: 1, unitPrice: '1.00' }] }, { session: a.session, token: diner });
   assert.equal(tampered.status, 400);
-  assert.equal((await api.post('/customer/orders', { cafeId: 'x', items: [{ productId: a.productId, variantId: a.variantId, quantity: 1 }] }, { session: a.session })).status, 400);
-  assert.equal((await api.post('/customer/orders', { items: [{ productId: a.productId, quantity: 1 }] }, { session: a.session })).body.error.code, 'VARIANT_REQUIRED');
+  assert.equal((await api.post('/customer/orders', { cafeId: 'x', items: [{ productId: a.productId, variantId: a.variantId, quantity: 1 }] }, { session: a.session, token: diner })).status, 400);
+  assert.equal((await api.post('/customer/orders', { items: [{ productId: a.productId, quantity: 1 }] }, { session: a.session, token: diner })).body.error.code, 'VARIANT_REQUIRED');
 
   const key = 'order-key-00000000000000000001';
   const body = { language: 'hi', notes: 'less sugar', items: [{ productId: a.productId, variantId: a.variantId, quantity: 2, addons: [{ addonId: a.addonId }], notes: 'hot' }] };
-  const order = await api.ok(api.post('/customer/orders', body, { session: a.session, key }));
+  const order = await api.ok(api.post('/customer/orders', body, { session: a.session, token: diner, key }));
   a.orderId = order.publicId;
   // (150 + 20) x 2 = 340. Tax 5% = 17. Total 357.
   assert.equal(order.subtotal.amount, '340');
@@ -183,9 +193,9 @@ test('10-11. placing an order: server prices it, and the kitchen is notified liv
   assert.equal(order.items[0].name, 'मसाला चाय');
   assert.deepEqual(order.items[0].taxes.map((t: any) => t.code).sort(), ['CGST', 'SGST']);
 
-  const retry = await api.ok(api.post('/customer/orders', body, { session: a.session, key }));
+  const retry = await api.ok(api.post('/customer/orders', body, { session: a.session, token: diner, key }));
   assert.equal(retry.publicId, order.publicId, 'a retried request returns the same order');
-  assert.equal((await api.post('/customer/orders', { ...body, notes: 'different' }, { session: a.session, key })).body.error.code, 'IDEMPOTENCY_KEY_REUSED');
+  assert.equal((await api.post('/customer/orders', { ...body, notes: 'different' }, { session: a.session, token: diner, key })).body.error.code, 'IDEMPOTENCY_KEY_REUSED');
 
   await dispatch();
   await new Promise((r) => setTimeout(r, 100));
@@ -329,13 +339,13 @@ test('17. another cafe cannot reach any of it', async () => {
   assert.equal(invoices.length, 0);
 
   assert.equal((await api.get(`/customer/orders/${a.orderId}`, { session: b.session })).status, 404);
-  assert.equal((await api.post('/customer/orders', { items: [{ productId: a.productId, variantId: a.variantId, quantity: 1 }] }, { session: b.session })).status, 404, "another cafe's product");
+  assert.equal((await api.post('/customer/orders', { items: [{ productId: a.productId, variantId: a.variantId, quantity: 1 }] }, { session: b.session, token: diner })).status, 404, "another cafe's product");
   assert.equal((await api.post(`/customer/orders/${a.orderId}/payments`, { methodCode: 'upi' }, { session: b.session, key: 'attack-2' })).status, 404);
 });
 
 test('JPY cafe: a parallel order in another currency stays correct and separate', async () => {
   const conn = await adminConnection();
-  const order = await api.ok(api.post('/customer/orders', { items: [{ productId: b.productId, quantity: 3 }] }, { session: b.session }));
+  const order = await api.ok(api.post('/customer/orders', { items: [{ productId: b.productId, quantity: 3 }] }, { session: b.session, token: diner }));
   assert.equal(order.total.amount, '1500');
   assert.equal(order.total.currency, 'JPY');
   const cash = await api.ok(api.post('/cafe/payments/cash', { orderId: order.publicId }, { ...staff(b), key: 'cash-jpy-1' }));
@@ -411,15 +421,31 @@ test('inventory: recipe consumption at acceptance, average cost, COGS, reversal 
   assert.equal((await api.ok(api.get(`/cafe/reports/balance-sheet?asOf=${today()}`, { token: a.token }))).balanced, true);
 });
 
+test('every role can open its workspace, and only managers and owners see the full profile', async () => {
+  const invite = await api.ok(api.post('/cafe/staff', { email: 'waiter@chai.test', fullName: 'Wasim', roleCode: 'waiter' }, { token: a.token }));
+  await api.ok(api.post('/auth/accept-invitation', { token: invite.invitationToken, password: 'waiter password long' }));
+  const waiter = (await api.ok(api.post('/auth/login', { email: 'waiter@chai.test', password: 'waiter password long', audience: 'cafe' }))).accessToken;
+  const ws = await api.ok(api.get('/cafe/workspace', { token: waiter }));
+  assert.equal(ws.name, 'Chai House');
+  assert.equal(ws.currencyCode, 'INR');
+  assert.ok(ws.branches.length >= 1);
+  assert.ok(ws.permissions.includes('orders.read') && !ws.permissions.includes('reports.read'));
+  assert.deepEqual(ws.user, { fullName: 'Wasim', email: 'waiter@chai.test', roles: [{ code: 'waiter', name: 'Waiter' }] }, 'the portal can say who is signed in, and as what');
+  assert.equal(ws.legalName, undefined, 'no legal, tax or contact details');
+  assert.equal(ws.businessRegistrationNumber, undefined);
+  assert.equal((await api.get('/cafe/profile', { token: waiter })).status, 403);
+  assert.equal((await api.ok(api.get('/cafe/workspace', { token: a.token }))).permissions.includes('reports.read'), true);
+});
+
 test('coupons respect limits; loyalty earns on paid orders for signed-in customers and restores on cancel', async () => {
   await api.ok(api.post('/cafe/coupons', { code: 'save10', discountType: 'percent', percentValue: '10', maxRedemptions: 1 }, { token: a.token }));
-  const order = await api.ok(api.post('/customer/orders', { couponCode: 'SAVE10', items: [{ productId: a.productId, variantId: a.variantId, quantity: 1 }] }, { session: a.session }));
+  const order = await api.ok(api.post('/customer/orders', { couponCode: 'SAVE10', items: [{ productId: a.productId, variantId: a.variantId, quantity: 1 }] }, { session: a.session, token: diner }));
   assert.equal(order.discount.amount, '15');
   // 135 taxable; each 2.5% component rounds 3.375 up to 3.38.
   assert.equal(order.total.amount, '141.76');
-  assert.equal((await api.post('/customer/orders', { couponCode: 'SAVE10', items: [{ productId: a.productId, variantId: a.variantId, quantity: 1 }] }, { session: a.session })).body.error.code, 'COUPON_EXHAUSTED');
+  assert.equal((await api.post('/customer/orders', { couponCode: 'SAVE10', items: [{ productId: a.productId, variantId: a.variantId, quantity: 1 }] }, { session: a.session, token: diner })).body.error.code, 'COUPON_EXHAUSTED');
   await api.ok(api.post(`/cafe/orders/${order.publicId}/status`, { status: 'cancelled', reason: 'test' }, staff(a)));
-  const again = await api.ok(api.post('/customer/orders', { couponCode: 'SAVE10', items: [{ productId: a.productId, variantId: a.variantId, quantity: 1 }] }, { session: a.session }));
+  const again = await api.ok(api.post('/customer/orders', { couponCode: 'SAVE10', items: [{ productId: a.productId, variantId: a.variantId, quantity: 1 }] }, { session: a.session, token: diner }));
   assert.equal(again.discount.amount, '15', 'cancelling releases the redemption');
   await api.ok(api.post(`/cafe/orders/${again.publicId}/status`, { status: 'cancelled', reason: 'test' }, staff(a)));
 
@@ -439,8 +465,9 @@ test('coupons respect limits; loyalty earns on paid orders for signed-in custome
 
 
   // Cafe B never met this customer, so it cannot see them.
-  assert.equal((await api.ok(api.get('/cafe/customers', { token: b.token }))).length, 0);
-  assert.equal((await api.ok(api.get('/cafe/customers', { token: a.token }))).length, 1);
+  const emails = async (cafe: Cafe) => (await api.ok(api.get('/cafe/customers', { token: cafe.token }))).map((r: { email: string | null }) => r.email);
+  assert.ok(!(await emails(b)).includes('diner@example.test'));
+  assert.ok((await emails(a)).includes('diner@example.test'));
 
   // A ready order leaves a localized notification in the customer's inbox.
   const tracked = await api.ok(api.post('/customer/orders', { language: 'hi', items: [{ productId: a.productId, variantId: a.variantId, quantity: 1 }] }, session));
@@ -453,7 +480,8 @@ test('coupons respect limits; loyalty earns on paid orders for signed-in custome
   await api.ok(api.del('/customer/account', { token: c.accessToken }));
   // A deleted customer's token can no longer attach to a guest order at the table.
   assert.equal((await api.post('/customer/orders', { items: [{ productId: a.productId, variantId: a.variantId, quantity: 1 }] }, session)).status, 401);
-  assert.equal((await api.ok(api.get('/cafe/customers', { token: a.token })))[0].email, null, 'erasure removes identity, orders stay');
+  const after = await emails(a);
+  assert.ok(!after.includes('diner@example.test') && after.includes(null), 'erasure removes identity, orders stay');
   assert.equal((await api.get('/customer/profile', { token: c.accessToken })).status, 401);
 });
 
@@ -461,7 +489,7 @@ test('prepay: the kitchen sees nothing until the money is really received', asyn
   assert.equal((await api.patch('/cafe/settings', { paymentPolicy: 'sometimes' }, { token: a.token })).body.error.code, 'SETTING_VALUE_INVALID');
   await api.ok(api.patch('/cafe/settings', { paymentPolicy: 'prepay' }, { token: a.token }));
   const before = (await api.ok(api.get('/kitchen/tickets', staff(a)))).length;
-  const o = await api.ok(api.post('/customer/orders', { items: [{ productId: a.productId, variantId: a.variantId, quantity: 1 }] }, { session: a.session }));
+  const o = await api.ok(api.post('/customer/orders', { items: [{ productId: a.productId, variantId: a.variantId, quantity: 1 }] }, { session: a.session, token: diner }));
   assert.equal(o.status, 'pending_payment');
   assert.equal((await api.ok(api.get('/kitchen/tickets', staff(a)))).length, before, 'unpaid prepay orders stay out of the kitchen');
   assert.equal((await api.post(`/cafe/orders/${o.publicId}/status`, { status: 'accepted' }, staff(a))).body.error.code, 'ORDER_ILLEGAL_TRANSITION');
@@ -605,7 +633,7 @@ test('subscriptions: plans are dynamic, limits are enforced, and the lifecycle r
   await api.ok(api.put('/platform/plans/starter', { isActive: true, isPublic: true, trialDays: 0, graceDays: 3, prices: [{ currency: 'JPY', interval: 'monthly', amount: '1000' }], entitlements: [{ feature: 'monthly_orders', enabled: true, limit: 2 }, { feature: 'employees', enabled: true, limit: 1 }] }, { token: adminToken }));
   assert.equal((await api.post('/cafe/subscription', { planCode: 'starter', interval: 'yearly' }, { token: b.token })).body.error.code, 'PLAN_PRICE_UNAVAILABLE');
   await api.ok(api.post('/cafe/subscription', { planCode: 'starter', interval: 'monthly' }, { token: b.token }));
-  const place = () => api.post('/customer/orders', { items: [{ productId: b.productId, quantity: 1 }] }, { session: b.session });
+  const place = () => api.post('/customer/orders', { items: [{ productId: b.productId, quantity: 1 }] }, { session: b.session, token: diner });
   const results: number[] = [];
   for (let i = 0; i < 3; i++) results.push((await place()).status);
   // One order already placed this month before subscribing, so the limit of 2 leaves room for one.
@@ -659,7 +687,7 @@ test('realtime: events do not cross cafes, rooms cannot be chosen, reconnect rep
   const guestEvents: any[] = [];
   guest.on('event', (e) => guestEvents.push(e));
   await new Promise<void>((res) => guest.once('ready', () => res()));
-  const order2 = await api.ok(api.post('/customer/orders', { items: [{ productId: a.productId, variantId: a.variantId, quantity: 1 }] }, { session: a.session }));
+  const order2 = await api.ok(api.post('/customer/orders', { items: [{ productId: a.productId, variantId: a.variantId, quantity: 1 }] }, { session: a.session, token: diner }));
   await api.ok(api.post(`/cafe/orders/${order2.publicId}/status`, { status: 'accepted' }, staff(a)));
   await dispatch();
   await new Promise((r) => setTimeout(r, 150));
@@ -765,4 +793,87 @@ test('errors are localized by language, with a stable code', async () => {
   assert.equal(nf.body.error.code, 'NOT_FOUND');
   assert.equal(nf.body.error.message, 'नहीं मिला');
   assert.ok(nf.body.error.requestId);
+});
+
+test('a table frees itself once paid, the next party starts fresh, and staff can free it by hand only when settled', async () => {
+  const tableId = (await api.ok(api.post('/cafe/tables', { tableNumber: 'T9', capacity: 2 }, staff(a)))).publicId;
+  const token = (await api.ok(api.get(`/cafe/tables/${tableId}/qr`, staff(a)))).url.split('/t/')[1];
+  const status = async () => (await api.ok(api.get('/cafe/tables', staff(a)))).find((t: { public_id: string }) => t.public_id === tableId).status;
+  const item = { items: [{ productId: a.productId, variantId: a.variantId, quantity: 1 }] };
+
+  const first = (await api.ok(api.get(`/public/qr/${token}`))).session.token;
+  assert.equal(await status(), 'occupied');
+  const order = await api.ok(api.post('/customer/orders', item, { session: first, token: diner }));
+  assert.equal((await api.post(`/cafe/tables/${tableId}/release`, {}, staff(a))).body.error.code, 'SESSION_HAS_UNPAID_ORDERS', 'no table is freed while money is owed');
+  assert.equal(await status(), 'occupied');
+
+  await api.ok(api.post('/cafe/payments/cash', { orderId: order.publicId }, { ...staff(a), key: 'release-cash-1' }));
+  assert.equal(await status(), 'available', 'paying in full frees the table');
+  assert.equal((await api.ok(api.get(`/customer/orders/${order.publicId}`, { session: first }))).paymentStatus, 'paid', 'the guests who paid can still see their order');
+
+  // The same guests order dessert: the table is theirs again.
+  const dessert = await api.ok(api.post('/customer/orders', item, { session: first, token: diner }));
+  assert.equal(await status(), 'occupied');
+  await api.ok(api.post('/cafe/payments/cash', { orderId: dessert.publicId }, { ...staff(a), key: 'release-cash-2' }));
+  assert.equal(await status(), 'available');
+
+  // The next party gets a new session and none of the last guests' orders.
+  const next = (await api.ok(api.get(`/public/qr/${token}`))).session.token;
+  assert.notEqual(next, first);
+  assert.equal((await api.ok(api.get('/customer/orders', { session: next }))).length, 0);
+  assert.equal((await api.get(`/customer/orders/${order.publicId}`, { session: first })).status, 410, "the previous party's session has ended");
+  assert.equal(await status(), 'occupied');
+
+  // Nothing owed: staff may free it by hand, and the session closes with it.
+  await api.ok(api.post(`/cafe/tables/${tableId}/release`, {}, staff(a)));
+  assert.equal(await status(), 'available');
+  assert.equal((await api.get('/customer/orders', { session: next })).status, 410);
+});
+
+test('loopholes: table PIN, session end after paying, settings bounds and password reset', async () => {
+  // Settings are checked: an hour-long session-after-payment is fine, a negative one is not.
+  assert.equal((await api.patch('/cafe/settings', { sessionEndAfterPaymentMinutes: -1 }, { token: a.token })).body.error.code, 'SETTING_VALUE_INVALID');
+  assert.equal((await api.patch('/cafe/settings', { unpaidAlertMinutes: '60' }, { token: a.token })).body.error.code, 'SETTING_TYPE_INVALID');
+  await api.ok(api.patch('/cafe/settings', { tablePinRequired: true, sessionEndAfterPaymentMinutes: 0, unpaidAlertMinutes: 45 }, { token: a.token }));
+  assert.deepEqual((await api.ok(api.get('/cafe/workspace', { token: a.token }))).settings, { unpaidAlertMinutes: 45, tablePinRequired: true });
+
+  const tableId = (await api.ok(api.post('/cafe/tables', { tableNumber: 'P1', capacity: 2 }, staff(a)))).publicId;
+  const token = (await api.ok(api.get(`/cafe/tables/${tableId}/qr`, staff(a)))).url.split('/t/')[1];
+  const scan = await api.ok(api.get(`/public/qr/${token}`));
+  assert.equal(scan.session.pinRequired, true);
+  const session = scan.session.token;
+  const item = { items: [{ productId: a.productId, variantId: a.variantId, quantity: 1 }] };
+
+  // Browsers may send the PIN proof: the cross-origin preflight must allow its header, or the web app could never order.
+  const preflight = await fetch(`${api.base}/customer/orders`, { method: 'OPTIONS', headers: { Origin: 'http://localhost:8083', 'Access-Control-Request-Method': 'POST', 'Access-Control-Request-Headers': 'x-table-pin,x-table-session' } });
+  assert.match(preflight.headers.get('access-control-allow-headers') ?? '', /X-Table-Pin/i);
+
+  // A photo of the QR is not enough: ordering needs the PIN the staff read out.
+  assert.equal((await api.post('/customer/orders', item, { session, token: diner })).body.error.code, 'TABLE_PIN_REQUIRED');
+  const pin = (await api.ok(api.get('/cafe/tables', staff(a)))).find((t: { public_id: string }) => t.public_id === tableId).pin;
+  assert.match(pin, /^\d{4}$/, 'staff can see the PIN of an occupied table');
+  const wrong = pin === '0000' ? '1111' : '0000';
+  assert.equal((await api.post('/customer/table-pin', { pin: wrong }, { session })).body.error.code, 'TABLE_PIN_WRONG');
+  const { proof } = await api.ok(api.post('/customer/table-pin', { pin }, { session }));
+  const placed = await api.post('/customer/orders', item, { session, token: diner, pin: proof });
+  assert.equal(placed.status, 201, JSON.stringify(placed.body));
+
+  // With the session set to end at payment, the paying guests cannot order again from outside.
+  await api.ok(api.post('/cafe/payments/cash', { orderId: placed.body.data.publicId }, { ...staff(a), key: 'pin-cash-1' }));
+  assert.equal((await api.get(`/customer/orders/${placed.body.data.publicId}`, { session })).status, 410, 'session ends once paid, as the cafe chose');
+  await api.ok(api.patch('/cafe/settings', { tablePinRequired: false, sessionEndAfterPaymentMinutes: 30, unpaidAlertMinutes: 60 }, { token: a.token }));
+
+  // Password reset: no email provider, so asking for a link says so plainly; a valid link still works end to end.
+  assert.deepEqual(await api.ok(api.get('/customer/auth/features')), { passwordReset: false });
+  assert.equal((await api.post('/customer/auth/password-reset/request', { email: 'table-diner@example.test' })).body.error.code, 'PASSWORD_RESET_UNAVAILABLE');
+  const raw = 'reset-link-token-for-the-e2e-test-0001';
+  const { createHash } = await import('node:crypto');
+  const conn = await adminConnection();
+  await conn.query(`INSERT INTO user_tokens (customer_id, purpose, token_hash, expires_at) SELECT id, 'password_reset', ?, NOW(3) + INTERVAL 30 MINUTE FROM customers WHERE email = 'table-diner@example.test'`, [createHash('sha256').update(raw).digest('hex')]);
+  await conn.end();
+  assert.equal((await api.post('/customer/auth/password-reset/confirm', { token: 'not-a-real-reset-token-at-all', password: 'a brand new password' })).body.error.code, 'RESET_LINK_INVALID');
+  await api.ok(api.post('/customer/auth/password-reset/confirm', { token: raw, password: 'a brand new password' }));
+  assert.equal((await api.post('/customer/auth/password-reset/confirm', { token: raw, password: 'another new password' })).body.error.code, 'RESET_LINK_INVALID', 'a link works once');
+  assert.equal((await api.post('/customer/auth/login', { email: 'table-diner@example.test', password: 'table diner password' })).status, 401);
+  diner = (await api.ok(api.post('/customer/auth/login', { email: 'table-diner@example.test', password: 'a brand new password' }))).accessToken;
 });

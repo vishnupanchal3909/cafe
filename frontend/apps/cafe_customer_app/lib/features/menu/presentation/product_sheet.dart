@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:shared_core/shared_core.dart';
 import 'package:shared_design_system/shared_design_system.dart';
 import 'package:shared_models/shared_models.dart';
+import '../../../config.dart';
 import '../../account/data/account_repository.dart';
 import '../../cart/domain/cart.dart';
 import '../../cart/presentation/cart_cubit.dart';
@@ -50,8 +51,15 @@ class _ProductSheetState extends State<ProductSheet> {
       child: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(Space.md, 0, Space.md, Space.md),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
+          if (p.imageUrls.isNotEmpty) ...[
+            Container(
+              decoration: BoxDecoration(borderRadius: BorderRadius.circular(24), boxShadow: depthShadows(Theme.of(context).colorScheme, lift: 1.2)),
+              child: ClipRRect(borderRadius: BorderRadius.circular(24), child: AspectRatio(aspectRatio: 16 / 9, child: NetworkPhoto(url: '$apiBaseUrl${p.imageUrls.first}'))),
+            ),
+            const SizedBox(height: Space.md),
+          ],
           Row(children: [
-            Expanded(child: Text(p.name, style: Theme.of(context).textTheme.titleLarge)),
+            Expanded(child: Text(p.name, style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800))),
             if (GetIt.I.isRegistered<AccountRepository>() && GetIt.I<AccountRepository>().signedIn)
               IconButton(
                 tooltip: l.wishlist,
@@ -94,9 +102,15 @@ class _ProductSheetState extends State<ProductSheet> {
           TextField(controller: _notes, maxLength: 500, decoration: InputDecoration(labelText: l.specialInstructions), onChanged: (_) => setState(() {})),
           const SizedBox(height: Space.sm),
           Row(children: [
-            IconButton.outlined(tooltip: l.quantity, onPressed: _qty > 1 ? () => setState(() => _qty--) : null, icon: const Icon(Icons.remove)),
-            Padding(padding: const EdgeInsets.symmetric(horizontal: Space.md), child: Text('$_qty', style: Theme.of(context).textTheme.titleLarge)),
-            IconButton.outlined(tooltip: l.quantity, onPressed: () => setState(() => _qty++), icon: const Icon(Icons.add)),
+            Raised(
+              radius: 28,
+              lift: 0.6,
+              child: Row(mainAxisSize: MainAxisSize.min, children: [
+                IconButton(tooltip: l.quantity, onPressed: _qty > 1 ? () => setState(() => _qty--) : null, icon: const Icon(Icons.remove)),
+                Padding(padding: const EdgeInsets.symmetric(horizontal: Space.xs), child: Text('$_qty', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800))),
+                IconButton(tooltip: l.quantity, onPressed: () => setState(() => _qty++), icon: const Icon(Icons.add)),
+              ]),
+            ),
             const SizedBox(width: Space.md),
             Expanded(
               child: FilledButton(

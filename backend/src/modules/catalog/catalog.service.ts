@@ -297,6 +297,26 @@ export class CatalogService {
     return { language: lang, currency, categories, products };
   }
 
+  // The main photo: what the guest sees first. Replacing drops the link only, so the file stays with the cafe's media.
+  async setProductImage(productPublicId: string, assetId: string) {
+    await this.db.tx(async (tx) => {
+      const asset = await tx.selectFrom('media_assets').select('id').where('cafe_id', '=', tenantId()).where('public_id', '=', assetId).where('status', '=', 'ready').executeTakeFirst();
+      if (!asset) throw notFound('ASSET_NOT_FOUND');
+      const productId = await idOf(tx, 'products', productPublicId);
+      await tx.deleteFrom('product_images').where('cafe_id', '=', tenantId()).where('product_id', '=', productId).execute();
+      await tx.insertInto('product_images').values({ cafe_id: tenantId(), product_id: productId, asset_id: asset.id }).execute();
+    });
+    return { ok: true };
+  }
+
+  async removeProductImage(productPublicId: string) {
+    await this.db.tx(async (tx) => {
+      const productId = await idOf(tx, 'products', productPublicId);
+      await tx.deleteFrom('product_images').where('cafe_id', '=', tenantId()).where('product_id', '=', productId).execute();
+    });
+    return { ok: true };
+  }
+
   async addProductImage(productPublicId: string, assetId: string) {
     await this.db.tx(async (tx) => {
       const asset = await tx.selectFrom('media_assets').select('id').where('cafe_id', '=', tenantId()).where('public_id', '=', assetId).where('status', '=', 'ready').executeTakeFirst();

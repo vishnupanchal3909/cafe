@@ -33,6 +33,8 @@ class ApiSessionRepository implements SessionRepository {
       config: CafeConfig.fromJson(r['config'] as Map<String, dynamic>),
     );
     _api.tableSession = ctx.sessionToken;
+    // A PIN entered for an earlier table session means nothing for this one.
+    _api.tablePin = null;
     return ctx;
   }
 

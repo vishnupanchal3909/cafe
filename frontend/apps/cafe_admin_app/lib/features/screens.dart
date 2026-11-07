@@ -26,18 +26,18 @@ class DashboardScreen extends StatelessWidget {
           onRefresh: reload,
           child: ListView(padding: const EdgeInsets.all(Space.md), children: [
             StatGrid(children: [
-              StatCard(label: l.totalCafes, value: c.dates.number(n(cafes['total'])), icon: Icons.storefront),
-              StatCard(label: l.activeCafes, value: c.dates.number(n(cafes['active'])), icon: Icons.check_circle_outline),
-              StatCard(label: l.pendingCafes, value: c.dates.number(n(cafes['pending'])), icon: Icons.hourglass_top),
-              StatCard(label: l.totalCustomers, value: c.dates.number(n(d['customers'])), icon: Icons.people_outline),
-              StatCard(label: l.totalOrders, value: c.dates.number(n(orders['total'])), icon: Icons.receipt_long),
-              StatCard(label: l.activeSubscriptions, value: c.dates.number(n(subs['active'])), icon: Icons.card_membership),
+              StatCard(label: l.totalCafes, value: c.dates.number(n(cafes['total'])), icon: Icons.storefront, color: Colors.indigo.shade600),
+              StatCard(label: l.activeCafes, value: c.dates.number(n(cafes['active'])), icon: Icons.check_circle_outline, color: Colors.green.shade700),
+              StatCard(label: l.pendingCafes, value: c.dates.number(n(cafes['pending'])), icon: Icons.hourglass_top, color: Colors.orange.shade800),
+              StatCard(label: l.totalCustomers, value: c.dates.number(n(d['customers'])), icon: Icons.people_outline, color: Colors.cyan.shade700),
+              StatCard(label: l.totalOrders, value: c.dates.number(n(orders['total'])), icon: Icons.receipt_long, color: Colors.purple.shade600),
+              StatCard(label: l.activeSubscriptions, value: c.dates.number(n(subs['active'])), icon: Icons.card_membership, color: Colors.pink.shade600),
             ]),
             const SizedBox(height: Space.md),
             // Shown per currency. Adding different currencies together would be a false number.
-            BarList(title: l.grossByCurrency, rows: [for (final g in gross) (_s(g['currency_code']), double.parse(_s(g['gross'])), c.money.formatAmount(_s(g['gross']), _s(g['currency_code'])))]),
+            BarList(title: l.grossByCurrency, icon: Icons.payments_outlined, rows: [for (final g in gross) (_s(g['currency_code']), double.parse(_s(g['gross'])), c.money.formatAmount(_s(g['gross']), _s(g['currency_code'])))]),
             const SizedBox(height: Space.md),
-            BarList(title: l.cafesByCountry, rows: [for (final g in countries) (_s(g['country_code']), double.parse(_s(g['cafes'])), _s(g['cafes']))]),
+            BarList(title: l.cafesByCountry, icon: Icons.public, rows: [for (final g in countries) (_s(g['country_code']), double.parse(_s(g['cafes'])), _s(g['cafes']))]),
           ]),
         );
       },

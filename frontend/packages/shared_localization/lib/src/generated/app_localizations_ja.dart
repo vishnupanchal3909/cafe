@@ -1046,4 +1046,136 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get openingCheckout => '安全な決済画面を開いています…';
+
+  @override
+  String get welcomeBack => 'おかえりなさい';
+
+  @override
+  String get thisMonth => '今月';
+
+  @override
+  String get revenueTrend => '日別の売上';
+
+  @override
+  String get recentOrders => '最近の注文';
+
+  @override
+  String get addPhoto => '写真を追加';
+
+  @override
+  String get changePhoto => '写真を変更';
+
+  @override
+  String get removePhoto => '写真を削除';
+
+  @override
+  String get filterAll => 'すべて';
+
+  @override
+  String get available => '提供中';
+
+  @override
+  String get loginTagline => 'カフェの運営を、ひとつの場所で美しく。';
+
+  @override
+  String get signInSubtitle => '続行するにはサインインしてください';
+
+  @override
+  String get showPassword => 'パスワードを表示';
+
+  @override
+  String get hidePassword => 'パスワードを隠す';
+
+  @override
+  String get back => '戻る';
+
+  @override
+  String get adminConsole => 'プラットフォーム管理';
+
+  @override
+  String get adminLoginTagline => 'プラットフォーム上のすべてのカフェをひと目で。';
+
+  @override
+  String get kitchenDisplay => 'キッチンディスプレイ';
+
+  @override
+  String get kitchenLoginTagline => 'すべての伝票を、キッチンのどこからでもはっきりと。';
+
+  @override
+  String get customerLoginTagline => 'お気に入りを保存し、注文を追跡し、特典を貯めましょう。';
+
+  @override
+  String get signInToOrder => '注文するにはサインイン';
+
+  @override
+  String get signInToOrderHint => '自由にご覧いただけます。注文するには、サインインするかアカウントを作成してください。';
+
+  @override
+  String get roleOwner => 'オーナー';
+
+  @override
+  String get markAvailable => '空席にする';
+
+  @override
+  String get tableReleased => 'テーブルが空席になりました';
+
+  @override
+  String get tableHasUnpaid => 'このテーブルには未払いの注文があります。先に会計を済ませてください。';
+
+  @override
+  String unpaidForMinutes(int minutes) {
+    return '$minutes分間未払い';
+  }
+
+  @override
+  String tablePin(String pin) {
+    return 'PIN $pin';
+  }
+
+  @override
+  String get enterTablePin => 'テーブルPINを入力';
+
+  @override
+  String get tablePinHint => 'テーブルの4桁のPINをスタッフにお尋ねください。';
+
+  @override
+  String get tablePinWrong => 'PINが一致しません。スタッフにご確認ください。';
+
+  @override
+  String get setTablePin => '注文前にお客様にテーブルPINを求める';
+
+  @override
+  String get setSessionEndAfterPayment => '支払い後、この時間でテーブルセッションを終了する';
+
+  @override
+  String get setUnpaidAlert => 'この時間を過ぎても未払いの注文をスタッフに知らせる';
+
+  @override
+  String get forgotPassword => 'パスワードをお忘れですか？';
+
+  @override
+  String get resetPassword => '新しいパスワードを設定';
+
+  @override
+  String get newPassword => '新しいパスワード';
+
+  @override
+  String get passwordResetDone => 'パスワードを変更しました。サインインできます。';
+
+  @override
+  String get resetLinkInvalid => 'このリンクは期限切れか、すでに使用されています。';
+
+  @override
+  String get passwordResetUnavailable => 'パスワードのリセットはまだ利用できません。';
+
+  @override
+  String get minutesUnit => '分';
+
+  @override
+  String get resetLinkSent => 'このメールにアカウントがあれば、リセット用リンクを送信します。';
+
+  @override
+  String countsForDay(String date) {
+    return '$dateの営業日分';
+  }
 }

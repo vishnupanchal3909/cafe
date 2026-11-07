@@ -20,7 +20,9 @@
     "admin:create": "node dist/src/cli/create-admin.js",
     "keys:generate": "node database/scripts/generate-keys.ts",
     "openapi": "tsc -p tsconfig.build.json && API_TEST_DB=cafe_test_openapi node dist/test/export-openapi.js",
-    "razorpay:check": "tsc -p tsconfig.build.json && SKIP_ENV_FILE=1 node dist/test/razorpay-check.js"
+    "razorpay:check": "tsc -p tsconfig.build.json && SKIP_ENV_FILE=1 node dist/test/razorpay-check.js",
+    "demo:teahub": "tsc -p tsconfig.build.json && node dist/test/seed-tea-hub.js",
+    "demo:photos": "tsc -p tsconfig.build.json && node dist/test/seed-demo-photos.js"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1161.0",

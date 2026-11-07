@@ -12,7 +12,7 @@ export async function createApp(options: { logger?: false } = {}): Promise<INest
   const app = await NestFactory.create(AppModule, { rawBody: true, logger: options.logger ?? undefined });
   app.setGlobalPrefix('api/v1');
   app.use(helmet({ crossOriginResourcePolicy: { policy: 'same-site' } }));
-  app.enableCors({ origin: config.corsOrigins, credentials: true, allowedHeaders: ['Authorization', 'Content-Type', 'Idempotency-Key', 'X-Branch-Id', 'X-Table-Session', 'X-Requested-With', 'X-Access-Reason', 'Accept-Language'] });
+  app.enableCors({ origin: config.corsOrigins, credentials: true, allowedHeaders: ['Authorization', 'Content-Type', 'Idempotency-Key', 'X-Branch-Id', 'X-Table-Session', 'X-Table-Pin', 'X-Requested-With', 'X-Access-Reason', 'Accept-Language'] });
   const doc = new DocumentBuilder().setTitle('Cafe Platform API').setVersion('1').addBearerAuth().build();
   if (config.env !== 'production') SwaggerModule.setup('api/docs', app, SwaggerModule.createDocument(app, doc));
   await app.init();

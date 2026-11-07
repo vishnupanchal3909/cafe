@@ -38,6 +38,10 @@ void main() {
 
   test('placing, tracking and paying use the real contract', () async {
     final repo = ApiOrderRepository(api);
+    final diner = fx['diner'] as Map<String, dynamic>;
+    // A guest may browse, but ordering needs a customer login, and the server refuses without one.
+    await expectLater(repo.place(const Cart.empty(), language: 'hi', idempotencyKey: newIdempotencyKey()), throwsA(isA<ApiFailure>().having((f) => f.code, 'code', 'CUSTOMER_LOGIN_REQUIRED')));
+    await ApiAccountRepository(api).signIn(diner['email'] as String, diner['password'] as String);
     final p = menu.products.firstWhere((x) => x.name == 'मसाला चाय');
     final cart = const Cart.empty().add(CartLine(product: p, variant: p.variants.single, addons: [p.addonGroups.single.addons.single], quantity: 2));
     final order = await repo.place(cart, language: 'hi', idempotencyKey: newIdempotencyKey());

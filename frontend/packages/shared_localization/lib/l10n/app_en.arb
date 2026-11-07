@@ -364,5 +364,68 @@
 "reconciled": "Reconciled",
 "needsReview": "Needs review",
 "pendingKeys": "Saved. Now test the connection to switch online payments on.",
-"openingCheckout": "Opening secure checkout…"
+"openingCheckout": "Opening secure checkout…",
+"welcomeBack": "Welcome back",
+"thisMonth": "This month",
+"revenueTrend": "Revenue by day",
+"recentOrders": "Recent orders",
+"addPhoto": "Add photo",
+"changePhoto": "Change photo",
+"removePhoto": "Remove photo",
+"filterAll": "All",
+"available": "Available",
+"loginTagline": "Run your cafe beautifully, from one place.",
+"signInSubtitle": "Sign in to continue",
+"showPassword": "Show password",
+"hidePassword": "Hide password",
+"back": "Back",
+"adminConsole": "Platform console",
+"adminLoginTagline": "Every cafe on the platform, at a glance.",
+"kitchenDisplay": "Kitchen display",
+"kitchenLoginTagline": "Every ticket, clear from across the kitchen.",
+"customerLoginTagline": "Save favourites, track orders and earn rewards.",
+"signInToOrder": "Sign in to order",
+"signInToOrderHint": "Browse as much as you like. To place an order, sign in or create an account.",
+"roleOwner": "Owner",
+"markAvailable": "Mark available",
+"tableReleased": "Table is now available",
+"tableHasUnpaid": "This table still has unpaid orders. Settle the bill first.",
+"unpaidForMinutes": "Unpaid for {minutes} min",
+"@unpaidForMinutes": {
+"placeholders": {
+"minutes": {
+"type": "int"
+}
+}
+},
+"tablePin": "PIN {pin}",
+"@tablePin": {
+"placeholders": {
+"pin": {
+"type": "String"
+}
+}
+},
+"enterTablePin": "Enter the table PIN",
+"tablePinHint": "Ask the staff for the 4-digit PIN for your table.",
+"tablePinWrong": "That PIN doesn't match. Please check with the staff.",
+"setTablePin": "Ask guests for a table PIN before ordering",
+"setSessionEndAfterPayment": "End the guests' table session this long after they pay",
+"setUnpaidAlert": "Warn staff about orders still unpaid after",
+"forgotPassword": "Forgot password?",
+"resetPassword": "Set a new password",
+"newPassword": "New password",
+"passwordResetDone": "Password changed. You can sign in now.",
+"resetLinkInvalid": "This reset link has expired or was already used.",
+"passwordResetUnavailable": "Password reset isn't available yet.",
+"minutesUnit": "min",
+"resetLinkSent": "If that email has an account, a reset link is on its way.",
+"countsForDay": "counts for {date}",
+"@countsForDay": {
+"placeholders": {
+"date": {
+"type": "String"
+}
+}
+}
 }

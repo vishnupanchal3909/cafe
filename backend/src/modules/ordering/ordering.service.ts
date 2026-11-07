@@ -11,6 +11,7 @@ import { audit, Db, emit, rooms, staffRooms, Tx } from '../../infra/db/db.servic
 import { InventoryService } from '../inventory/inventory.service';
 import { loadSettings, pickTranslation } from '../tenancy/settings';
 import { EntitlementService } from '../subscriptions/entitlement.service';
+import { validPinProof } from '../tables/pin';
 import { businessDate, LineInput, localClock, priceOrder } from './pricing';
 
 export interface OrderItemInput { productId: string; variantId?: string; quantity: number; addons?: Array<{ addonId: string; quantity?: number }>; notes?: string }
@@ -43,7 +44,7 @@ export class OrderingService {
     return result;
   }
 
-  async place(input: PlaceOrderInput, idempotencyKey?: string) {
+  async place(input: PlaceOrderInput, idempotencyKey?: string, pinProof?: string) {
     if (!input.items.length) throw badRequest('ORDER_EMPTY');
     const s = store()!;
     const p = s.principal!;
@@ -58,8 +59,10 @@ export class OrderingService {
       let tableId: number | null = null;
       let sessionId: number | null = null;
       if (isGuestPath) {
-        const sess = await tx.selectFrom('table_sessions').select(['id', 'branch_id', 'table_id', 'status']).where('cafe_id', '=', cafeId).where('id', '=', p.tableSessionId!).forUpdate().executeTakeFirstOrThrow();
+        const sess = await tx.selectFrom('table_sessions').select(['id', 'public_id', 'branch_id', 'table_id', 'status', 'pin_ciphertext']).where('cafe_id', '=', cafeId).where('id', '=', p.tableSessionId!).forUpdate().executeTakeFirstOrThrow();
         if (sess.status !== 'open') throw new AppError(410, 'TABLE_SESSION_ENDED');
+        // A photo of the QR is not enough when the cafe asks for the table PIN.
+        if (sess.pin_ciphertext && (await loadSettings(tx)).tablePinRequired && !validPinProof(sess.public_id, pinProof)) throw new AppError(403, 'TABLE_PIN_REQUIRED');
         ({ branch_id: branchId, table_id: tableId, id: sessionId } = sess);
       } else {
         branchId = currentBranch();
@@ -69,6 +72,15 @@ export class OrderingService {
           tableId = t.id;
           const open = await tx.selectFrom('table_sessions').select('id').where('cafe_id', '=', cafeId).where('table_id', '=', t.id).where('status', '!=', 'closed').executeTakeFirst();
           sessionId = open?.id ?? null;
+        }
+      }
+      // A new order on a table freed after payment, e.g. the same guests ordering dessert, takes it again.
+      if (tableId) {
+        const back = await tx.updateTable('cafe_tables').set({ status: 'occupied' }).where('cafe_id', '=', cafeId).where('id', '=', tableId).where('status', '=', 'available').executeTakeFirst();
+        if (Number(back.numUpdatedRows)) {
+          await emit(tx, { cafeId, branchId, type: 'table.status_changed', rooms: staffRooms(cafeId, branchId), payload: { status: 'occupied' } });
+          // Their session was set to end soon after paying; ordering again gives it the cafe's full length back.
+          if (sessionId) await tx.updateTable('table_sessions').set({ expires_at: new Date(Date.now() + (await loadSettings(tx)).sessionHours * 3600_000) }).where('cafe_id', '=', cafeId).where('id', '=', sessionId).execute();
         }
       }
       const branch = await tx.selectFrom('cafe_branches').select(['timezone', 'business_day_cutoff', 'status', 'code', 'state_code']).where('cafe_id', '=', cafeId).where('id', '=', branchId).executeTakeFirstOrThrow();

@@ -39,9 +39,11 @@ class _Board extends StatelessWidget {
     return BlocConsumer<BoardCubit, BoardState>(
       listenWhen: (a, b) => a.newOrderTick != b.newOrderTick,
       listener: (_, _) => playAlert(),
-      builder: (c, s) => Scaffold(
+      builder: (c, s) => AmbientBackdrop(child: Scaffold(
+        backgroundColor: Colors.transparent,
         appBar: AppBar(
-          title: Text(l.orders),
+          toolbarHeight: 72,
+          title: Row(children: [const GlossyIcon(icon: Icons.soup_kitchen_outlined, size: 44), const SizedBox(width: Space.md), Flexible(child: Text(l.kitchenDisplay, overflow: TextOverflow.ellipsis))]),
           actions: [
             FutureBuilder<List<Map<String, dynamic>>>(
               future: GetIt.I<BoardRepository>().stations(),
@@ -76,23 +78,45 @@ class _Board extends StatelessWidget {
           onRetry: () => c.read<BoardCubit>().load(),
           empty: EmptyState(icon: Icons.soup_kitchen, message: l.noTickets),
           builder: (all) => LayoutBuilder(builder: (c, box) {
-            Widget col(BoardColumn column, String title) {
+            Widget col(BoardColumn column, String title, IconData icon) {
               final tickets = s.column(column, all);
-              return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-                Padding(padding: const EdgeInsets.all(Space.sm), child: Text('$title (${tickets.length})', style: Theme.of(c).textTheme.titleLarge)),
-                Expanded(child: ListView.separated(
-                  padding: const EdgeInsets.all(Space.sm),
-                  itemCount: tickets.length,
-                  separatorBuilder: (_, _) => const SizedBox(height: Space.sm),
-                  itemBuilder: (_, i) => TicketCard(
-                    ticket: tickets[i],
-                    onAdvance: () => _guard(c, () => c.read<BoardCubit>().advance(tickets[i])),
-                    onPriority: () => _guard(c, () => c.read<BoardCubit>().togglePriority(tickets[i])),
+              final tone = laneColor(column);
+              // Each lane is a shallow tray the tickets sit in.
+              return Container(
+                margin: const EdgeInsets.all(Space.sm),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(28),
+                  gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [tone.withValues(alpha: 0.10), Colors.white.withValues(alpha: 0.02)]),
+                  border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
+                ),
+                child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(Space.md, Space.md, Space.md, Space.xs),
+                    child: Row(children: [
+                      GlossyIcon(icon: icon, color: tone, size: 44),
+                      const SizedBox(width: Space.md),
+                      Expanded(child: Text(title, overflow: TextOverflow.ellipsis, style: Theme.of(c).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800))),
+                      Container(
+                        constraints: const BoxConstraints(minWidth: 44),
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(20), color: toneOf(tone, 0.6), boxShadow: [BoxShadow(color: tone.withValues(alpha: 0.5), blurRadius: 14, spreadRadius: -3)]),
+                        child: Text('${tickets.length}', textAlign: TextAlign.center, style: Theme.of(c).textTheme.titleLarge?.copyWith(color: Colors.black, fontWeight: FontWeight.w900)),
+                      ),
+                    ]),
                   ),
-                )),
-              ]);
+                  Expanded(child: ListView.separated(
+                    padding: const EdgeInsets.all(Space.md),
+                    itemCount: tickets.length,
+                    separatorBuilder: (_, _) => const SizedBox(height: Space.md),
+                    itemBuilder: (_, i) => TicketCard(
+                      ticket: tickets[i],
+                      onAdvance: () => _guard(c, () => c.read<BoardCubit>().advance(tickets[i])),
+                      onPriority: () => _guard(c, () => c.read<BoardCubit>().togglePriority(tickets[i])),
+                    ),
+                  )),
+              ]));
             }
-            final columns = [col(BoardColumn.incoming, l.kitchenNew), col(BoardColumn.working, l.kitchenInProgress), col(BoardColumn.ready, l.kitchenReady)];
+            final columns = [col(BoardColumn.incoming, l.kitchenNew, Icons.fiber_new), col(BoardColumn.working, l.kitchenInProgress, Icons.local_fire_department), col(BoardColumn.ready, l.kitchenReady, Icons.room_service)];
             if (box.maxWidth >= Breakpoints.medium) return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [for (final w in columns) Expanded(child: w)]);
             return DefaultTabController(length: 3, child: Column(children: [
               TabBar(tabs: [Tab(text: l.kitchenNew), Tab(text: l.kitchenInProgress), Tab(text: l.kitchenReady)]),
@@ -100,7 +124,7 @@ class _Board extends StatelessWidget {
             ]));
           }),
         ),
-      ),
+      )),
     );
   }
 }

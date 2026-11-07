@@ -33,7 +33,7 @@ class _AdminAppState extends State<AdminApp> {
     redirect: (_, s) => !_ready ? (s.matchedLocation == '/splash' ? null : '/splash') : s.matchedLocation == '/splash' ? (_signedIn ? '/dashboard' : '/login') : !_signedIn ? (s.matchedLocation == '/login' ? null : '/login') : _needsMfa ? '/mfa' : (s.matchedLocation == '/login' || s.matchedLocation == '/mfa' ? '/dashboard' : null),
     routes: [
       GoRoute(path: '/splash', builder: (_, _) => const Scaffold(body: SkeletonList())),
-      GoRoute(path: '/login', builder: (c, _) => LoginView(title: c.l10n.cafes, onSubmit: (e, p, t) async {
+      GoRoute(path: '/login', builder: (c, _) => LoginView(title: c.l10n.adminConsole, tagline: c.l10n.adminLoginTagline, icon: Icons.hub_outlined, paneIcons: const [Icons.storefront, Icons.insights, Icons.verified_user_outlined], onSubmit: (e, p, t) async {
         _needsMfa = await _repo.signIn(e, p, t);
         _signedIn = true;
         _auth.value++;
@@ -43,7 +43,7 @@ class _AdminAppState extends State<AdminApp> {
         builder: (c, s, child) {
           final l = c.l10n;
           return AppShell(
-            title: l.cafes,
+            title: l.adminConsole,
             currentPath: s.matchedLocation,
             onSelect: c.go,
             actions: [IconButton(tooltip: l.signOut, icon: const Icon(Icons.logout), onPressed: () async { await _repo.signOut(); _signedIn = false; _auth.value++; })],
@@ -86,7 +86,7 @@ class _AdminAppState extends State<AdminApp> {
 
   @override
   Widget build(BuildContext context) => MaterialApp.router(
-        onGenerateTitle: (c) => c.l10n.cafes,
+        onGenerateTitle: (c) => c.l10n.adminConsole,
         theme: AppThemes.admin(Brightness.light),
         darkTheme: AppThemes.admin(Brightness.dark),
         supportedLocales: supportedAppLocales,

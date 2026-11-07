@@ -21,6 +21,11 @@ export class RefreshDto {
   @ApiPropertyOptional() @IsOptional() @IsString() @MaxLength(200) refreshToken?: string;
   @ApiPropertyOptional({ enum: ['body', 'cookie'] }) @IsOptional() @IsIn(['body', 'cookie']) transport?: 'body' | 'cookie';
 }
+export class ResetRequestDto { @ApiProperty() @IsEmail() @MaxLength(254) email: string; }
+export class ResetConfirmDto {
+  @ApiProperty() @IsString() @MinLength(20) @MaxLength(200) token: string;
+  @ApiProperty() @IsString() @MinLength(10) @MaxLength(200) password: string;
+}
 export class CustomerRegisterDto {
   @ApiProperty() @IsEmail() @MaxLength(254) email: string;
   @ApiProperty() @IsString() @MinLength(10) @MaxLength(200) password: string;
@@ -114,7 +119,8 @@ export class AuthController {
 export class CustomerAuthController {
   constructor(private readonly auth: AuthService) {}
 
-  @Post('register') @Public() @RateLimit(10)
+  // At most 20 new accounts an hour from one address. Not stricter: guests on a busy cafe's Wi-Fi share one address.
+  @Post('register') @Public() @RateLimit(20, 3600)
   async register(@Body() dto: CustomerRegisterDto, @Res({ passthrough: true }) res: Response) {
     return deliver(res, await this.auth.customerRegister(dto), dto.transport);
   }
@@ -124,4 +130,11 @@ export class CustomerAuthController {
   }
   @Post('google') @Public() @HttpCode(200) @RateLimit(10)
   google(@Body() dto: GoogleDto) { return this.auth.customerGoogle(dto.idToken); }
+  @Post('password-reset/request') @Public() @HttpCode(200) @RateLimit(5, 3600)
+  resetRequest(@Body() dto: ResetRequestDto) { return this.auth.requestCustomerPasswordReset(dto.email); }
+  @Post('password-reset/confirm') @Public() @HttpCode(200) @RateLimit(10)
+  resetConfirm(@Body() dto: ResetConfirmDto) { return this.auth.confirmCustomerPasswordReset(dto.token, dto.password); }
+  // What the sign-in screen may offer, so it never shows a button that cannot work.
+  @Get('features') @Public()
+  features() { return { passwordReset: this.auth.passwordResetAvailable }; }
 }

@@ -52,7 +52,7 @@ The suggested table list did not cover these, but the features cannot be correct
 | A-5 | Default inventory valuation is moving weighted average |
 | A-6 | Default fiscal year is seeded per country as a suggestion and is editable per cafe (India April to March) |
 | A-7 | Super Admin read access to cafe data is audited; customer personal data is masked unless a stated, logged support reason is given |
-| A-8 | Guests can order on a table session with no personal data; a phone or email is only requested for a receipt |
+| A-8 | ~~Guests can order on a table session with no personal data~~. Replaced by D-6 |
 | A-9 | Stock deduction happens at order acceptance, and reverses on cancellation before preparation. Wastage records the rest |
 | A-10 | Audit logs and financial records are retained at least 8 years (longest common tax retention is configurable) |
 | A-11 | Loyalty points are per cafe and do not transfer between cafes |
@@ -69,6 +69,7 @@ These affect legal, financial or architectural outcomes, so they are not silentl
 | **D-3** | Plan prices, limits and commission % | Plan names seeded, **inactive with no prices** | Business decision; must not be invented (Rule: no invented financial rules) |
 | **D-4** | Product brand name and domain | Working name "CafePlatform" | Customer-facing URLs, QR content and email domains. Changing the QR domain means reprinting QR codes unless a redirect domain is kept |
 | **D-5** | Data residency | Single region (Mumbai) | GDPR transfers from EU cafes need an agreement or an EU deployment |
+| **D-6** | **Must a diner sign in to order?** | **Decided by the owner (2026-11-07): yes.** Anyone can browse the whole customer app, but placing an order needs a customer account. The server refuses an order without a customer login (`CUSTOMER_LOGIN_REQUIRED`), so the rule holds outside the app too | Every order is tied to a person, which helps loyalty and history. It adds a step at the table, and collecting an email means privacy notices and erasure requests apply to every diner |
 
 ### Compliance warning: this is not achievable with software alone
 

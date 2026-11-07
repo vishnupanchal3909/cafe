@@ -1,3 +1,4 @@
+import 'package:cafe_owner_app/core/order_flags.dart';
 import 'package:cafe_owner_app/core/owner_repository.dart';
 import 'package:cafe_owner_app/features/screens.dart';
 import 'package:dio/dio.dart';
@@ -24,12 +25,15 @@ class Adapter implements HttpClientAdapter {
   void close({bool force = false}) {}
 }
 
-Adapter setup(Map<String, Object> routes) {
+/// A manager's everyday permissions, unless a test says otherwise.
+const managerPermissions = {'menu.read', 'menu.manage', 'orders.read', 'orders.update', 'orders.cancel', 'payments.read', 'payments.cash_confirm', 'refunds.request', 'refunds.approve', 'tables.read', 'tables.manage', 'tables.transfer', 'staff.read', 'inventory.manage', 'kitchen.read', 'kitchen.configure'};
+
+Adapter setup(Map<String, Object> routes, {Set<String> permissions = managerPermissions}) {
   GetIt.I.allowReassignment = true;
   final dio = Dio();
   final a = Adapter(routes);
   dio.httpClientAdapter = a;
-  GetIt.I.registerSingleton(OwnerRepository(ApiClient(baseUrl: 'http://x', tokens: MemoryTokenStore(), dio: dio)));
+  GetIt.I.registerSingleton(OwnerRepository(ApiClient(baseUrl: 'http://x', tokens: MemoryTokenStore(), dio: dio))..permissions = permissions);
   return a;
 }
 
@@ -38,6 +42,18 @@ Widget host(Widget child, {Locale? locale}) => MaterialApp(locale: locale, suppo
 const analytics = {'currency': 'INR', 'revenue': '125000.00', 'orders': 3, 'averageOrderValue': '41666.67', 'cancellationRate': '0.00', 'topProducts': [{'name': 'Chai', 'quantity': '5'}], 'peakHours': [{'local_hour': 9, 'orders': 2}]};
 
 void main() {
+  group('walk-outs', () {
+    final now = DateTime.utc(2026, 11, 7, 12);
+    Map<String, dynamic> order(String pay, String status, int minutesAgo) => {'payment_status': pay, 'status': status, 'placed_at': now.subtract(Duration(minutes: minutesAgo)).toIso8601String()};
+    test('an order unpaid past the alert time is flagged with how long', () => expect(unpaidMinutes(order('unpaid', 'served', 75), alertMinutes: 60, now: now), 75));
+    test('within the alert time it is not', () => expect(unpaidMinutes(order('unpaid', 'served', 30), alertMinutes: 60, now: now), isNull));
+    test('part paid still counts; paid and cancelled do not', () {
+      expect(unpaidMinutes(order('partially_paid', 'served', 90), alertMinutes: 60, now: now), 90);
+      expect(unpaidMinutes(order('paid', 'served', 90), alertMinutes: 60, now: now), isNull);
+      expect(unpaidMinutes(order('unpaid', 'cancelled', 90), alertMinutes: 60, now: now), isNull);
+    });
+  });
+
   testWidgets('the dashboard shows real figures with Indian grouping', (t) async {
     setup({'/cafe/analytics': analytics});
     await t.pumpWidget(MoneyScope(minorUnits: const {'INR': 2}, countryCode: 'IN', child: host(const DashboardScreen())));
@@ -66,6 +82,60 @@ void main() {
     expect(find.text('Active'), findsNWidgets(2));
     expect(find.text('active'), findsNothing);
     expect(find.byIcon(Icons.person_off), findsOneWidget);
+  });
+
+  group('menu cards', () {
+    const menu = {
+      'categories': [{'publicId': 'C1', 'name': 'Tea'}, {'publicId': 'C2', 'name': 'Snacks'}],
+      'products': [
+        {'publicId': 'P1', 'categoryId': 'C1', 'name': 'Masala Chai', 'price': {'amount': '25.0000', 'currency': 'INR'}, 'dietaryClass': 'veg', 'isOutOfStock': false, 'imageUrls': <Object>[]},
+        {'publicId': 'P2', 'categoryId': 'C2', 'name': 'Samosa', 'price': {'amount': '30.0000', 'currency': 'INR'}, 'dietaryClass': 'veg', 'isOutOfStock': true, 'imageUrls': <Object>[]},
+      ],
+    };
+    Future<Adapter> show(WidgetTester t, {Set<String> permissions = managerPermissions}) async {
+      t.view.physicalSize = const Size(1400, 900); t.view.devicePixelRatio = 1; addTearDown(t.view.reset);
+      final a = setup({'/cafe/menu': menu, '/cafe/products/P1': {'ok': true}, '/cafe/products/P2': {'ok': true}}, permissions: permissions);
+      await t.pumpWidget(MoneyScope(minorUnits: const {'INR': 2}, countryCode: 'IN', child: host(const MenuScreen(defaultLanguage: 'en'))));
+      await t.pumpAndSettle();
+      return a;
+    }
+
+    testWidgets('a product without a photo invites one, and an unavailable one says so', (t) async {
+      await show(t);
+      expect(find.text('Add photo'), findsNWidgets(2));
+      expect(find.text('₹25.00'), findsOneWidget);
+      expect(find.text('Out of stock'), findsOneWidget);
+    });
+
+    testWidgets('categories and search narrow the grid', (t) async {
+      await show(t);
+      await t.tap(find.widgetWithText(ChoiceChip, 'Snacks'));
+      await t.pump();
+      expect(find.text('Masala Chai'), findsNothing);
+      expect(find.text('Samosa'), findsOneWidget);
+      await t.tap(find.widgetWithText(ChoiceChip, 'All'));
+      await t.enterText(find.byType(TextField), 'masala');
+      await t.pump();
+      expect(find.text('Masala Chai'), findsOneWidget);
+      expect(find.text('Samosa'), findsNothing);
+    });
+
+    testWidgets('someone who may only read the menu sees it, without anything that would be refused', (t) async {
+      final a = await show(t, permissions: const {'menu.read', 'orders.read'});
+      expect(find.text('Masala Chai'), findsOneWidget);
+      expect(find.text('Add photo'), findsNothing);
+      expect(find.text('New product'), findsNothing);
+      expect(find.byIcon(Icons.more_vert), findsNothing);
+      expect(t.widget<Switch>(find.byType(Switch).first).onChanged, isNull, reason: 'the availability switch shows, but cannot be flipped');
+      expect(a.calls.where((c) => !c.startsWith('GET')), isEmpty);
+    });
+
+    testWidgets('the switch tells the server, and brings a sold-out item back too', (t) async {
+      final a = await show(t);
+      await t.tap(find.byType(Switch).last);
+      await t.pumpAndSettle();
+      expect(a.calls, contains('PATCH /cafe/products/P2'));
+    });
   });
 
   testWidgets('a permission error from the server is shown, not swallowed', (t) async {

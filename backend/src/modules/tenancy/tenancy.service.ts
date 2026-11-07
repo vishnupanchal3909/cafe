@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { sql } from 'kysely';
-import { actorUserId, asTenant, tenantId, unscoped } from '../../common/context';
+import { actorUserId, asTenant, principal, tenantId, unscoped } from '../../common/context';
 import { badRequest, conflict, notFound } from '../../common/errors';
 import { sha256, ulid } from '../../common/ids';
 import { assertBranchAllowed } from '../../common/lookup';
@@ -10,6 +10,7 @@ import { hashPassword } from '../identity/crypto';
 import { DEFAULT_SETTINGS, loadSettings } from './settings';
 
 const SETTING_CHOICES: Record<string, string[]> = { paymentPolicy: ['prepay', 'postpay'], taxRounding: ['line', 'invoice'] };
+const SETTING_RANGES: Record<string, [number, number]> = { sessionHours: [1, 24], sessionEndAfterPaymentMinutes: [0, 240], unpaidAlertMinutes: [5, 1440] };
 const slugify = (s: string) => s.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 60) || 'cafe';
 const NEUTRAL_THEME = { primary_color: '#6F4E37', secondary_color: '#C8A27A', background_color: '#FFFFFF', text_color: '#1F1A17', font_key: 'noto_sans' };
 
@@ -85,6 +86,29 @@ export class TenancyService {
       publicId: c.public_id, slug: c.slug, name: c.display_name, legalName: c.legal_name, description: c.description, status: c.status, countryCode: c.country_code, currencyCode: c.currency_code, currencyMinorUnit: minor.minor_unit,
       defaultLanguage: c.default_language_code, timezone: c.timezone, fiscalYearStartMonth: c.fiscal_year_start_month, contactEmail: c.contact_email, contactPhone: c.contact_phone,
       website: c.website, businessRegistrationNumber: c.business_registration_number, languages, branches,
+    };
+  }
+
+  /// What every staff member needs to work, whatever their role: no legal, tax or contact details.
+  /// Branches are limited to the ones this person may work in, and their own permissions come with it.
+  async workspace() {
+    const c = await this.db.q.selectFrom('cafes').select(['public_id', 'slug', 'display_name', 'status', 'country_code', 'currency_code', 'default_language_code', 'timezone']).where('id', '=', tenantId()).executeTakeFirstOrThrow();
+    const minor = await this.db.q.selectFrom('currencies').select('minor_unit').where('code', '=', c.currency_code).executeTakeFirstOrThrow();
+    const p = principal();
+    const settings = await loadSettings(this.db.q);
+    let q = this.db.q.selectFrom('cafe_branches').select(['id', 'public_id', 'name', 'is_main']).where('cafe_id', '=', tenantId()).where('deleted_at', 'is', null);
+    if (p.branchIds) q = q.where('id', 'in', p.branchIds.length ? p.branchIds : [0]);
+    const branches = await q.orderBy('is_main', 'desc').execute();
+    // Who is signed in and as what, so each portal can say so plainly.
+    const me = await this.db.q.selectFrom('users').select(['full_name', 'email']).where('id', '=', p.id!).executeTakeFirstOrThrow();
+    const roles = await this.db.q.selectFrom('user_roles as ur').innerJoin('roles as r', 'r.id', 'ur.role_id').select(['r.code', 'r.name'])
+      .where('ur.user_id', '=', p.id!).where('ur.cafe_id', '=', tenantId()).where('r.deleted_at', 'is', null).orderBy('r.id').execute();
+    return {
+      user: { fullName: me.full_name, email: me.email, roles: roles.map((r) => ({ code: r.code, name: r.name })) },
+      publicId: c.public_id, slug: c.slug, name: c.display_name, status: c.status, countryCode: c.country_code, currencyCode: c.currency_code, currencyMinorUnit: minor.minor_unit,
+      defaultLanguage: c.default_language_code, timezone: c.timezone, branches: branches.map(({ id: _id, ...b }) => b), permissions: [...p.permissions].sort(),
+      // The few cafe rules every role's screens need, without the full settings a manager edits.
+      settings: { unpaidAlertMinutes: settings.unpaidAlertMinutes, tablePinRequired: settings.tablePinRequired },
     };
   }
 
@@ -167,6 +191,8 @@ export class TenancyService {
         if (!(key in DEFAULT_SETTINGS)) throw badRequest('SETTING_UNKNOWN', key);
         if (typeof value !== typeof DEFAULT_SETTINGS[key as keyof typeof DEFAULT_SETTINGS] && value !== null) throw badRequest('SETTING_TYPE_INVALID', key);
         if (SETTING_CHOICES[key] && !SETTING_CHOICES[key]!.includes(value as string)) throw badRequest('SETTING_VALUE_INVALID', key);
+        const range = SETTING_RANGES[key];
+        if (range && (!Number.isInteger(value) || (value as number) < range[0] || (value as number) > range[1])) throw badRequest('SETTING_VALUE_INVALID', key);
         await tx.insertInto('cafe_settings').values({ cafe_id: tenantId(), setting_key: key, value: JSON.stringify(value), updated_by_user_id: actorUserId() })
           .onDuplicateKeyUpdate({ value: JSON.stringify(value), updated_by_user_id: actorUserId() }).execute();
       }

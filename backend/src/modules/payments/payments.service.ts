@@ -13,6 +13,7 @@ import { OrderingService } from '../ordering/ordering.service';
 import { cashfree } from './providers/cashfree';
 import { CheckoutInput, GatewayCredentials, GatewayError, PaymentProvider, VerifiedEvent, WebhookSignatureError } from './providers/provider';
 import { razorpay } from './providers/razorpay';
+import { releaseTableIfSettled } from '../tables/release';
 import { stripe } from './providers/stripe';
 
 // An event that can never succeed, however often it is redelivered. Retryable failures answer 503 instead.
@@ -248,6 +249,8 @@ export class PaymentsService {
         await this.ordering.transition(tx, o.id, 'placed');
         await this.ordering.dispatchToKitchen(tx, o.id, o.public_id, o.branch_id, o.order_number);
       }
+      // Settled: the table is free for the next party once nothing else on it is owed.
+      await releaseTableIfSettled(tx, cafeId, o.branch_id, o.table_id, o.session_id);
     }
     const session = o.session_id ? await tx.selectFrom('table_sessions').select('public_id').where('cafe_id', '=', cafeId).where('id', '=', o.session_id).executeTakeFirst() : undefined;
     await emit(tx, { cafeId, branchId: o.branch_id, type: 'payment.status_changed', rooms: [...staffRooms(cafeId, o.branch_id), ...(session ? [rooms.session(session.public_id)] : []), ...(o.customer_id ? [rooms.customer(o.customer_id)] : [])], payload: { orderId: o.public_id, paymentId: pay.public_id, status: 'succeeded', paymentStatus: fullyPaid ? 'paid' : 'partially_paid' } });

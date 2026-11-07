@@ -13,12 +13,23 @@ class OwnerRepository {
 
   /// The cafe's operating currency, from its profile.
   String currency = '';
+  String cafeName = '';
+
+  /// What the signed-in person may do. Screens hide what they cannot; the server refuses it regardless.
+  Set<String> permissions = const {};
+  bool can(String permission) => permissions.contains(permission);
+
+  /// Minutes after which an unpaid order is flagged to staff, from the cafe's settings.
+  int unpaidAlertMinutes = 60;
 
   Future<void> signIn(String email, String password, {String? cafeId}) async => api.adoptTokens(await api.post<Map<String, dynamic>>('/auth/login', body: {'email': email, 'password': password, 'audience': 'cafe', 'transport': api.transport, if (cafeId != null) 'cafePublicId': cafeId}));
   Future<void> signOut() => api.signOut();
   Future<Map<String, dynamic>> reference() => api.get<Map<String, dynamic>>('/public/reference');
   Future<void> register(Map<String, dynamic> body) => api.post<Map<String, dynamic>>('/public/cafes/register', body: body);
   Future<Map<String, dynamic>> profile() => api.get<Map<String, dynamic>>('/cafe/profile');
+
+  /// What any staff member needs to work, with their own permissions. Unlike [profile], every role may read it.
+  Future<Map<String, dynamic>> workspace() => api.get<Map<String, dynamic>>('/cafe/workspace');
   Future<Map<String, dynamic>> analytics(String from, String to) => api.get<Map<String, dynamic>>('/cafe/analytics', query: {'from': from, 'to': to});
 
   Future<List<dynamic>> orders({String? status}) async => (await api.getPage('/cafe/orders', query: {if (status != null) 'status': status, 'limit': 100})).items;
@@ -41,6 +52,8 @@ class OwnerRepository {
   Future<void> deleteCategory(String id) => api.delete<Map<String, dynamic>>('/cafe/categories/$id');
   Future<void> createProduct(Map<String, dynamic> body) => api.post<Map<String, dynamic>>('/cafe/products', body: body);
   Future<void> updateProduct(String id, Map<String, dynamic> body) => api.patch<Map<String, dynamic>>('/cafe/products/$id', body: body);
+  Future<void> setProductImage(String id, String assetId) => api.put<Map<String, dynamic>>('/cafe/products/$id/image', body: {'assetId': assetId});
+  Future<void> removeProductImage(String id) => api.delete<Map<String, dynamic>>('/cafe/products/$id/image');
   Future<void> deleteProduct(String id) => api.delete<Map<String, dynamic>>('/cafe/products/$id');
   Future<List<dynamic>> taxCategories() => api.get<List<dynamic>>('/cafe/tax-categories');
   Future<void> createTaxCategory(String code, String name) => api.post<Map<String, dynamic>>('/cafe/tax-categories', body: {'code': code, 'name': name});
@@ -49,6 +62,8 @@ class OwnerRepository {
   Future<List<dynamic>> tables() => api.get<List<dynamic>>('/cafe/tables');
   Future<void> createTable(String number, int capacity) => api.post<Map<String, dynamic>>('/cafe/tables', body: {'tableNumber': number, 'capacity': capacity});
   Future<void> deleteTable(String id) => api.delete<Map<String, dynamic>>('/cafe/tables/$id');
+  /// Frees an occupied table. The server refuses while anything on it is unpaid.
+  Future<void> releaseTable(String id) => api.post<Map<String, dynamic>>('/cafe/tables/$id/release');
   Future<Map<String, dynamic>> qr(String id) => api.get<Map<String, dynamic>>('/cafe/tables/$id/qr');
   Future<Map<String, dynamic>> regenerateQr(String id) => api.post<Map<String, dynamic>>('/cafe/tables/$id/qr/regenerate');
   Future<List<dynamic>> serviceRequests() => api.get<List<dynamic>>('/cafe/service-requests');
@@ -87,7 +102,7 @@ class OwnerRepository {
     await api.put<Map<String, dynamic>>('/cafe/products/$productId/addon-groups', body: {'ids': [g['publicId']]});
   }
   Future<void> addProductImage(String productId, String assetId) => api.post<Map<String, dynamic>>('/cafe/products/$productId/images', body: {'assetId': assetId});
-  Future<String> upload(List<int> bytes, String filename, String kind) async => (await api.upload('/cafe/media', bytes, filename, query: {'kind': kind}))['publicId'] as String;
+  Future<String> upload(List<int> bytes, String filename, String kind) async => (await api.upload(kind == 'product_image' ? '/cafe/media/product-image' : '/cafe/media', bytes, filename, query: {'kind': kind}))['publicId'] as String;
   Future<List<dynamic>> recipe(String productId) => api.get<List<dynamic>>('/cafe/products/$productId/recipe');
   Future<void> addRecipeLine(String productId, String ingredientId, String quantity) async {
     final current = (await recipe(productId)).cast<Map<dynamic, dynamic>>().where((x) => x['variant_id'] == null && x['ingredient_id'] != ingredientId);

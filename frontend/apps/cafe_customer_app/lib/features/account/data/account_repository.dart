@@ -18,6 +18,11 @@ abstract class AccountRepository {
   Future<void> addWish(String slug, String productId);
   Future<void> removeWish(String slug, String productId);
   Future<void> reserve(String slug, Map<String, dynamic> body);
+
+  /// Whether the server can email reset links. Until an email provider is set up it cannot, and the app offers none.
+  Future<bool> passwordResetAvailable();
+  Future<void> requestPasswordReset(String email);
+  Future<void> confirmPasswordReset(String token, String password);
 }
 
 class ApiAccountRepository implements AccountRepository {
@@ -55,6 +60,12 @@ class ApiAccountRepository implements AccountRepository {
   Future<void> removeWish(String slug, String productId) => _api.delete<Map<String, dynamic>>('/customer/cafes/$slug/wishlist/$productId');
   @override
   Future<void> reserve(String slug, Map<String, dynamic> body) => _api.post<Map<String, dynamic>>('/customer/cafes/$slug/reservations', body: body);
+  @override
+  Future<bool> passwordResetAvailable() async => (await _api.get<Map<String, dynamic>>('/customer/auth/features'))['passwordReset'] == true;
+  @override
+  Future<void> requestPasswordReset(String email) => _api.post<Map<String, dynamic>>('/customer/auth/password-reset/request', body: {'email': email});
+  @override
+  Future<void> confirmPasswordReset(String token, String password) => _api.post<Map<String, dynamic>>('/customer/auth/password-reset/confirm', body: {'token': token, 'password': password});
   @override
   Future<void> deleteAccount() => _api.delete<Map<String, dynamic>>('/customer/account');
 }

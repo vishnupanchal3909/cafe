@@ -1052,4 +1052,145 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get openingCheckout => 'Opening secure checkout…';
+
+  @override
+  String get welcomeBack => 'Welcome back';
+
+  @override
+  String get thisMonth => 'This month';
+
+  @override
+  String get revenueTrend => 'Revenue by day';
+
+  @override
+  String get recentOrders => 'Recent orders';
+
+  @override
+  String get addPhoto => 'Add photo';
+
+  @override
+  String get changePhoto => 'Change photo';
+
+  @override
+  String get removePhoto => 'Remove photo';
+
+  @override
+  String get filterAll => 'All';
+
+  @override
+  String get available => 'Available';
+
+  @override
+  String get loginTagline => 'Run your cafe beautifully, from one place.';
+
+  @override
+  String get signInSubtitle => 'Sign in to continue';
+
+  @override
+  String get showPassword => 'Show password';
+
+  @override
+  String get hidePassword => 'Hide password';
+
+  @override
+  String get back => 'Back';
+
+  @override
+  String get adminConsole => 'Platform console';
+
+  @override
+  String get adminLoginTagline => 'Every cafe on the platform, at a glance.';
+
+  @override
+  String get kitchenDisplay => 'Kitchen display';
+
+  @override
+  String get kitchenLoginTagline =>
+      'Every ticket, clear from across the kitchen.';
+
+  @override
+  String get customerLoginTagline =>
+      'Save favourites, track orders and earn rewards.';
+
+  @override
+  String get signInToOrder => 'Sign in to order';
+
+  @override
+  String get signInToOrderHint =>
+      'Browse as much as you like. To place an order, sign in or create an account.';
+
+  @override
+  String get roleOwner => 'Owner';
+
+  @override
+  String get markAvailable => 'Mark available';
+
+  @override
+  String get tableReleased => 'Table is now available';
+
+  @override
+  String get tableHasUnpaid =>
+      'This table still has unpaid orders. Settle the bill first.';
+
+  @override
+  String unpaidForMinutes(int minutes) {
+    return 'Unpaid for $minutes min';
+  }
+
+  @override
+  String tablePin(String pin) {
+    return 'PIN $pin';
+  }
+
+  @override
+  String get enterTablePin => 'Enter the table PIN';
+
+  @override
+  String get tablePinHint =>
+      'Ask the staff for the 4-digit PIN for your table.';
+
+  @override
+  String get tablePinWrong =>
+      'That PIN doesn\'t match. Please check with the staff.';
+
+  @override
+  String get setTablePin => 'Ask guests for a table PIN before ordering';
+
+  @override
+  String get setSessionEndAfterPayment =>
+      'End the guests\' table session this long after they pay';
+
+  @override
+  String get setUnpaidAlert => 'Warn staff about orders still unpaid after';
+
+  @override
+  String get forgotPassword => 'Forgot password?';
+
+  @override
+  String get resetPassword => 'Set a new password';
+
+  @override
+  String get newPassword => 'New password';
+
+  @override
+  String get passwordResetDone => 'Password changed. You can sign in now.';
+
+  @override
+  String get resetLinkInvalid =>
+      'This reset link has expired or was already used.';
+
+  @override
+  String get passwordResetUnavailable => 'Password reset isn\'t available yet.';
+
+  @override
+  String get minutesUnit => 'min';
+
+  @override
+  String get resetLinkSent =>
+      'If that email has an account, a reset link is on its way.';
+
+  @override
+  String countsForDay(String date) {
+    return 'counts for $date';
+  }
 }

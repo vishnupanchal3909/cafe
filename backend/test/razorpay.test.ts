@@ -8,14 +8,14 @@ let app: App;
 let api: Api;
 let base: string;
 const mock = new RazorpayMock();
-let token: string; let branch: string; let session: string; let account: string; let slug: string;
+let token: string; let branch: string; let session: string; let diner: string; let account: string; let slug: string;
 let productId: string;
 const staff = () => ({ token, branch });
 const today = () => new Date(Date.now() + 86400_000).toISOString().slice(0, 10);
 let keyN = 0;
 const key = () => `k-${++keyN}-${Date.now()}`;
 
-const order = async () => api.ok(api.post('/customer/orders', { items: [{ productId, quantity: 1 }] }, { session }));
+const order = async () => api.ok(api.post('/customer/orders', { items: [{ productId, quantity: 1 }] }, { session, token: diner }));
 const startPay = async (orderId: string, extra: Record<string, unknown> = {}) => api.ok(api.post(`/customer/orders/${orderId}/payments`, { methodCode: 'upi', ...extra }, { session, key: key() }));
 const hook = async (name: string, payload: Record<string, unknown>, eventId?: string) => {
   const e = mock.event(name, payload, eventId);
@@ -47,6 +47,8 @@ before(async () => {
   const table = await api.ok(api.post('/cafe/tables', { tableNumber: 'T1' }, staff()));
   const qr = await api.ok(api.get(`/cafe/tables/${table.publicId}/qr`, staff()));
   session = (await api.ok(api.get(`/public/qr/${qr.url.split('/t/')[1]}`))).session.token;
+  // Ordering needs a signed-in customer.
+  diner = (await api.ok(api.post('/customer/auth/register', { email: 'rzp-diner@example.test', password: 'razorpay diner password', fullName: 'Diner' }))).accessToken;
   await api.ok(api.put('/cafe/payment-methods', { methods: ['cash', 'upi', 'card', 'payment_link'] }, { token }));
 });
 after(async () => { mock.stop(); await app.close(); });

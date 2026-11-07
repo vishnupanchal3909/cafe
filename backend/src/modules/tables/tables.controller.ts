@@ -1,6 +1,6 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { IsIn, IsInt, IsISO8601, IsOptional, IsString, Length, MaxLength, Min, MinLength } from 'class-validator';
+import { IsIn, IsInt, IsISO8601, IsOptional, IsString, Length, Matches, MaxLength, Min, MinLength } from 'class-validator';
 import { Audiences, Public, RateLimit, Requires } from '../../common/http';
 import { TableSessionRoute } from '../identity/auth.guard';
 import { TablesService } from './tables.service';
@@ -21,6 +21,7 @@ export class TransferDto {
   @IsString() @Length(26, 26) tableId: string;
   @IsString() @MinLength(3) @MaxLength(500) reason: string;
 }
+export class TablePinDto { @Matches(/^\d{4}$/) pin: string; }
 export class ServiceRequestDto { @IsIn(['waiter', 'bill', 'staff']) type: 'waiter' | 'bill' | 'staff'; }
 export class ServiceStatusDto { @IsIn(['acknowledged', 'resolved']) status: 'acknowledged' | 'resolved'; }
 export class ReservationDto {
@@ -48,6 +49,9 @@ export class SessionServiceController {
   constructor(private readonly svc: TablesService) {}
   @Post('service-requests') @TableSessionRoute() @RateLimit(20)
   request(@Body() d: ServiceRequestDto) { return this.svc.createServiceRequest(d.type); }
+  // Ten tries per ten minutes per address: a four-digit PIN cannot be worked through by guessing.
+  @Post('table-pin') @TableSessionRoute() @HttpCode(200) @RateLimit(10, 600)
+  pin(@Body() d: TablePinDto) { return this.svc.verifyPin(d.pin); }
 }
 
 @ApiTags('cafe-tables')
@@ -64,6 +68,7 @@ export class TablesController {
   @Post('tables/:id/qr/regenerate') @Requires('tables.manage') regen(@Param('id') id: string) { return this.svc.regenerateQr(id); }
   @Get('table-sessions') @Requires('tables.read') sessions() { return this.svc.activeSessions(); }
   @Post('table-sessions/:id/close') @Requires('orders.update') close(@Param('id') id: string) { return this.svc.closeSession(id); }
+  @Post('tables/:id/release') @Requires('orders.update') release(@Param('id') id: string) { return this.svc.release(id); }
   @Post('table-sessions/:id/merge') @Requires('tables.transfer') merge(@Param('id') id: string, @Body() d: MergeDto) { return this.svc.merge(id, d.tableId); }
   @Post('orders/:id/transfer') @Requires('tables.transfer') transfer(@Param('id') id: string, @Body() d: TransferDto) { return this.svc.transferOrder(id, d.tableId, d.reason); }
   @Get('service-requests') @Requires('service_requests.manage') requests() { return this.svc.listServiceRequests(); }

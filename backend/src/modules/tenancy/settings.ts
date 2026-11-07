@@ -13,10 +13,17 @@ export interface CafeSettings {
   sessionHours: number;
   stockDeductionEnabled: boolean;
   invoiceSeries: string;
+  /** Guests at a table must enter the PIN staff give them before ordering, so a photo of the QR is not enough. */
+  tablePinRequired: boolean;
+  /** After the bill is settled, the paying guests' table session ends this many minutes later. */
+  sessionEndAfterPaymentMinutes: number;
+  /** Staff are warned about an order still unpaid this many minutes after it was placed. */
+  unpaidAlertMinutes: number;
 }
 export const DEFAULT_SETTINGS: CafeSettings = {
   pricesIncludeTax: false, paymentPolicy: 'postpay', taxRounding: 'line', requireStaffAcceptance: true, cashRoundingIncrement: null,
   serviceChargePercent: '0', guestOrderingEnabled: true, sessionHours: 6, stockDeductionEnabled: true, invoiceSeries: 'INV',
+  tablePinRequired: false, sessionEndAfterPaymentMinutes: 30, unpaidAlertMinutes: 60,
 };
 export async function loadSettings(q: Q): Promise<CafeSettings> {
   const rows = await q.selectFrom('cafe_settings').select(['setting_key', 'value']).where('cafe_id', '=', tenantId()).execute();

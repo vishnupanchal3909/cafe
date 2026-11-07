@@ -167,6 +167,29 @@ export class AuthService {
     });
   }
 
+  /// Password reset needs a working email provider to deliver the link. None is integrated yet, so the feature reports
+  /// itself unavailable rather than pretending to send. When a provider is added and tested, this becomes its status.
+  get passwordResetAvailable() { return false; }
+
+  // When a provider is integrated: create a password_reset row in user_tokens for the customer (30 minutes), email the
+  // link `${config.publicAppUrl}/reset-password?token=...`, and answer ok whether or not the email has an account.
+  async requestCustomerPasswordReset(_email: string): Promise<{ ok: true }> {
+    throw new AppError(503, 'PASSWORD_RESET_UNAVAILABLE');
+  }
+
+  /// Sets a new password from a reset link. The link works once, expires, and every signed-in device is signed out.
+  async confirmCustomerPasswordReset(token: string, password: string) {
+    return unscoped('customers are global', () => this.db.tx(async (tx) => {
+      const t = await tx.selectFrom('user_tokens').select(['id', 'customer_id']).where('token_hash', '=', sha256(token)).where('purpose', '=', 'password_reset')
+        .where('used_at', 'is', null).where('expires_at', '>', new Date()).where('customer_id', 'is not', null).forUpdate().executeTakeFirst();
+      if (!t) throw badRequest('RESET_LINK_INVALID');
+      await tx.updateTable('customers').set({ password_hash: await hashPassword(password) }).where('id', '=', t.customer_id!).execute();
+      await tx.updateTable('user_tokens').set({ used_at: new Date() }).where('id', '=', t.id).execute();
+      await tx.updateTable('login_sessions').set({ revoked_at: new Date(), revoke_reason: 'password_reset' }).where('customer_id', '=', t.customer_id!).where('revoked_at', 'is', null).execute();
+      return { ok: true };
+    }));
+  }
+
   async customerGoogle(idToken: string) {
     if (!config.googleClientId) throw new AppError(503, 'GOOGLE_SIGNIN_NOT_CONFIGURED');
     const jwks = createRemoteJWKSet(new URL('https://www.googleapis.com/oauth2/v3/certs'));

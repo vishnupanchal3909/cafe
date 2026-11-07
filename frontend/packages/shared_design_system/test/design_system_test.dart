@@ -46,10 +46,27 @@ void main() {
           localizationsDelegates: appLocalizationDelegates,
           home: MediaQuery(data: MediaQueryData(size: s), child: AppShell(title: 'T', destinations: dest, currentPath: '/b', onSelect: (_) {}, child: const SizedBox())),
         );
-    testWidgets('a wide screen gets a rail', (t) async {
+    testWidgets('a wide screen gets a labelled sidebar', (t) async {
       t.view.physicalSize = const Size(1400, 900); t.view.devicePixelRatio = 1; addTearDown(t.view.reset);
       await t.pumpWidget(shell(const Size(1400, 900)));
-      expect(find.byType(NavigationRail), findsOneWidget);
+      expect(find.byType(AppSidebar), findsOneWidget);
+      final handle = t.ensureSemantics();
+      await t.pump();
+      expect(t.getSemantics(find.ancestor(of: find.text('B'), matching: find.byType(Semantics)).first), matchesSemantics(label: 'B', isButton: true, isSelected: true, hasSelectedState: true, hasTapAction: true, hasEnabledState: false));
+      handle.dispose();
+    });
+    testWidgets('the sidebar stays readable when a router nests the page in its own navigator', (t) async {
+      t.view.physicalSize = const Size(1400, 900); t.view.devicePixelRatio = 1; addTearDown(t.view.reset);
+      final handle = t.ensureSemantics();
+      await t.pumpWidget(MaterialApp(
+        supportedLocales: supportedAppLocales,
+        localizationsDelegates: appLocalizationDelegates,
+        home: AppShell(title: 'T', destinations: dest, currentPath: '/b', onSelect: (_) {}, child: Navigator(pages: const [MaterialPage<void>(child: Text('Body'))], onDidRemovePage: (_) {})),
+      ));
+      await t.pumpAndSettle();
+      expect(find.bySemanticsLabel('A'), findsOneWidget);
+      expect(find.bySemanticsLabel('Body'), findsOneWidget);
+      handle.dispose();
     });
     testWidgets('a phone gets a drawer', (t) async {
       t.view.physicalSize = const Size(390, 800); t.view.devicePixelRatio = 1; addTearDown(t.view.reset);

@@ -7,6 +7,8 @@ let app: App;
 let api: Api;
 const PUBLIC_ALLOWED = new Set([
   'POST /auth/login', 'POST /auth/refresh', 'POST /auth/accept-invitation', 'POST /customer/auth/register', 'POST /customer/auth/login', 'POST /customer/auth/google',
+  // Signed-out by nature: a diner who forgot their password, and what the sign-in screen may offer.
+  'POST /customer/auth/password-reset/request', 'POST /customer/auth/password-reset/confirm', 'GET /customer/auth/features',
   'POST /public/cafes/register', 'GET /public/reference', 'GET /public/cafes/:slug/config', 'GET /public/cafes/:slug/menu', 'GET /public/media/:id', 'GET /public/qr/:token',
   'POST /webhooks/payments/:provider/:account', 'GET /health',
 ]);

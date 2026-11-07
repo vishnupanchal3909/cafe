@@ -36,6 +36,9 @@ export async function bootstrap() {
     if (keys.length) await r.del(...keys);
     r.disconnect();
   }
+  // App code imported too early reads .env and would run tests against the developer's real database. Stop before any request.
+  const { config } = await import('../src/common/config');
+  if (config.db.name !== TEST_DB) throw new Error(`Refusing to test against ${config.db.name}: app code was imported before bootstrap(). Use a dynamic import.`);
   const { createApp } = await import('../src/bootstrap');
   const app = await createApp({ logger: false });
   await app.listen(Number(process.env.LIVE_PORT ?? 0));
@@ -46,7 +49,7 @@ export async function bootstrap() {
 export const adminConnection = () => mysql.createConnection({ host: process.env.DB_HOST ?? '127.0.0.1', port: Number(process.env.DB_PORT ?? 3307), user: process.env.DB_ADMIN_USER ?? 'root', password: process.env.DB_ADMIN_PASSWORD ?? '', database: TEST_DB, timezone: 'Z' });
 
 export interface Res { status: number; body: any; headers: Headers }
-export interface Auth { token?: string; branch?: string; session?: string; key?: string; lang?: string; reason?: string }
+export interface Auth { token?: string; branch?: string; session?: string; key?: string; lang?: string; reason?: string; pin?: string }
 
 export class Api {
   constructor(readonly base: string) {}
@@ -55,6 +58,7 @@ export class Api {
     if (auth.token) headers.Authorization = `Bearer ${auth.token}`;
     if (auth.branch) headers['X-Branch-Id'] = auth.branch;
     if (auth.session) headers['X-Table-Session'] = auth.session;
+    if (auth.pin) headers['X-Table-Pin'] = auth.pin;
     if (auth.key) headers['Idempotency-Key'] = auth.key;
     if (auth.lang) headers['Accept-Language'] = auth.lang;
     const r = await fetch(`${this.base}${path}`, { method, headers, body: body === undefined ? undefined : JSON.stringify(body) });

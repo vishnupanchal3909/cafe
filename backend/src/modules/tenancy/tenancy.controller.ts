@@ -131,6 +131,8 @@ export class PublicCafeController {
 export class CafeController {
   constructor(private readonly svc: TenancyService) {}
   @Get('profile') @Requires('cafe.profile.read') profile() { return this.svc.profile(); }
+  // Any signed-in staff member: the basics to run their screens. No permission needed beyond belonging to the cafe.
+  @Get('workspace') workspace() { return this.svc.workspace(); }
   @Patch('profile') @Requires('cafe.profile.manage') update(@Body() dto: UpdateProfileDto) { return this.svc.updateProfile(dto); }
   @Get('branches') @Requires('cafe.profile.read') branches() { return this.svc.branches(); }
   @Post('branches') @Requires('cafe.profile.manage') createBranch(@Body() dto: CreateBranchDto) { return this.svc.createBranch(dto); }
@@ -147,6 +149,11 @@ export class CafeController {
   @Put('theme') @Requires('cafe.branding.manage') setTheme(@Body() dto: ThemeDto) { return this.svc.updateTheme(dto); }
   @Post('banners') @Requires('cafe.branding.manage') banner(@Body() dto: CreateBannerDto) { return this.svc.createBanner(dto); }
   @Delete('banners/:id') @Requires('cafe.branding.manage') delBanner(@Param('id') id: string) { return this.svc.deleteBanner(id); }
+  // Editing the menu includes its photos, so this needs no branding permission.
+  @Post('media/product-image') @Requires('menu.manage') @RateLimit(30)
+  @UseInterceptors(FileInterceptor('file', { limits: { fileSize: 5 * 1024 * 1024 } }))
+  uploadProductImage(@UploadedFile() file: Express.Multer.File) { return this.svc.upload(file, 'product_image'); }
+
   @Post('media') @Requires('cafe.branding.manage') @RateLimit(30)
   @UseInterceptors(FileInterceptor('file', { limits: { fileSize: 5 * 1024 * 1024 } }))
   upload(@UploadedFile() file: Express.Multer.File, @Query('kind') kind: string) {

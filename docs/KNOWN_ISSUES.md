@@ -9,11 +9,23 @@
 | CI | `.github/workflows/ci.yml` has never run: there is no remote repository. Everything ran on Node 26, while CI pins Node 24 |
 | S3 | The adapter exists but has never run. Local disk storage was used, and production refuses to start without a bucket |
 | Google sign-in | Implemented on the server, never exercised. No client button |
-| Mobile | Customer app builds for the iOS simulator and as a debug APK, but has not run on a device. Kitchen, owner and admin are web only here. Android licences are not accepted on this machine |
+| Mobile | Customer app runs on a real Android phone (debug build, over Wi-Fi) and the iOS simulator; never on a real iPhone, and no release build is signed. Kitchen, owner and admin are web only here |
 | Load and performance | No load test. `main.dart.js` is 3.6 MB plus the rendering engine, and QR first-paint on a real phone over 4G has not been measured (risk R-1) |
 | Translations | All machine-written by an AI, unreviewed |
 | Security | Internal tests only. No independent penetration test |
 | Browser test | Run by hand through Chrome DevTools, which checks screens load, not every button. Not automated in the repo |
+
+## Found while checking the design
+
+| Item | Detail |
+|---|---|
+| Sample photos | Tea Hub's dev photos are from Wikimedia Commons, and most licences require credit (`.devdata/demo-photos/CREDITS.md`, not in git). Replace them with the cafe's own before going live |
+| Upload | The photo picker itself was not clicked in a browser test. The upload path below it is covered by API and live tests |
+| Replaced photos | Replacing or removing a photo keeps the old file in storage. There is no clean-up yet |
+| Depth design | Checked in headless Chrome on desktop and phone sizes, light and dark. Not checked on a real phone or a low-end device, where layered shadows cost more to draw. The lean-on-hover only happens with a mouse |
+| Role screens | Screens and buttons are hidden by permission on orders, menu, tables and payments. Screens a cashier or waiter never sees (inventory, finance, marketing, settings, staff) still show every button to managers, who hold most permissions; the server refuses anything not allowed |
+| iPhone app | Opens a table only from a `cafeplatform://` link: there is no in-app QR scanner, and universal links need the domain (D-4). Run on the iOS simulator, never a real device |
+| Customer theme | The customer app follows the cafe's own light or dark setting, not the phone's |
 
 ## Not implemented
 
@@ -28,7 +40,8 @@
 | Service charge tax | Service charge is added untaxed, which is wrong in some jurisdictions. Leave it at 0 until reviewed |
 | Consolidated reporting UI | API only |
 | Audit coverage | State changes on money, staff and governance are audited. Some minor edits (for example coupon toggles, table-level service requests) are not. The brief's "every action" for Super Admin holds for writes and main reads |
-| Password reset | The token table exists. There is no endpoint, as it needs email |
+| Password reset | Confirming a reset link works and is tested. Asking for a link answers `PASSWORD_RESET_UNAVAILABLE`, and the app hides "Forgot password?", until an email provider is chosen, integrated and tested (pending configuration). Staff accounts have no reset yet |
+| Fake customer accounts | Sign-up is capped at 20 accounts an hour per address, not lower because guests on cafe Wi-Fi share one. Nobody checks an email is real, so one-per-customer coupons can be reused with new accounts. Needs email verification, which needs the email provider |
 
 ## Limits to carry forward
 
@@ -46,7 +59,7 @@
 | K-11 | Fonts are not bundled, so non-Latin text relies on Flutter fetching Noto at runtime. `font_key` is stored and not applied | Bundle a vetted set |
 | K-12 | Web cookie refresh needs the app and API on the same site in production | Host under one registrable domain |
 | K-13 | Rate limiting is per IP, so a busy cafe's shared Wi-Fi shares one budget on QR routes | Add per-session limits |
-| K-14 | A printed QR code can open a session and order remotely. Staff acceptance is the mitigation, and the optional session PIN from the design is not built | Build the PIN before a public launch |
+| K-14 | A printed QR code can open a session and order remotely | Optional per-cafe table PIN (setting `tablePinRequired`), off by default; the paying party's session now ends `sessionEndAfterPaymentMinutes` after payment (default 30) |
 | K-15 | The moderate `npm audit` findings remain in `exceljs` and `@nestjs/swagger`, since fixing them needs major upgrades. `multer` is pinned to its patched version by an override | Upgrade when moving to Nest 12 |
 
 ## Business and legal

@@ -4,7 +4,7 @@ import { Type } from 'class-transformer';
 import { ArrayMaxSize, ArrayMinSize, IsArray, IsBoolean, IsIn, IsInt, IsObject, IsOptional, IsString, Length, MaxLength, Min, MinLength, ValidateNested } from 'class-validator';
 import { principal } from '../../common/context';
 import { Audiences, RateLimit, Requires } from '../../common/http';
-import { TableSessionRoute } from '../identity/auth.guard';
+import { RequiresCustomerLogin, TableSessionRoute } from '../identity/auth.guard';
 import { OrderingService, OrderStatus } from './ordering.service';
 
 class AddonChoiceDto {
@@ -49,8 +49,8 @@ export class CouponCheckDto {
 @Controller('customer')
 export class CustomerOrderController {
   constructor(private readonly svc: OrderingService) {}
-  @Post('orders') @TableSessionRoute() @RateLimit(30)
-  place(@Body() dto: PlaceOrderDto, @Headers('idempotency-key') key?: string) { return this.svc.place(dto, key); }
+  @Post('orders') @TableSessionRoute() @RequiresCustomerLogin() @RateLimit(30)
+  place(@Body() dto: PlaceOrderDto, @Headers('idempotency-key') key?: string, @Headers('x-table-pin') pin?: string) { return this.svc.place(dto, key, pin); }
   @Get('orders') @TableSessionRoute() list() { return this.svc.listForSession(); }
   @Get('orders/:id') @TableSessionRoute() get(@Param('id') id: string) { return this.svc.getForSession(id); }
   @Post('coupons/validate') @TableSessionRoute() @RateLimit(30) coupon(@Body() d: CouponCheckDto) { return this.svc.validateCoupon(d.code, d.subtotal); }

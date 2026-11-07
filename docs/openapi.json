@@ -435,6 +435,25 @@
     ]
    }
   },
+  "/api/v1/cafe/workspace": {
+   "get": {
+    "operationId": "CafeController_workspace",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe"
+    ]
+   }
+  },
   "/api/v1/cafe/branches": {
    "get": {
     "operationId": "CafeController_branches",
@@ -738,6 +757,25 @@
     ],
     "responses": {
      "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe"
+    ]
+   }
+  },
+  "/api/v1/cafe/media/product-image": {
+   "post": {
+    "operationId": "CafeController_uploadProductImage",
+    "parameters": [],
+    "responses": {
+     "201": {
       "description": ""
      }
     },
@@ -1081,6 +1119,70 @@
   "/api/v1/cafe/variants/{id}": {
    "delete": {
     "operationId": "CatalogController_delVariant",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-menu"
+    ]
+   }
+  },
+  "/api/v1/cafe/products/{id}/image": {
+   "put": {
+    "operationId": "CatalogController_setImage",
+    "parameters": [
+     {
+      "name": "id",
+      "required": true,
+      "in": "path",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/AssetDto"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": ""
+     }
+    },
+    "security": [
+     {
+      "bearer": []
+     }
+    ],
+    "tags": [
+     "cafe-menu"
+    ]
+   },
+   "delete": {
+    "operationId": "CatalogController_removeImage",
     "parameters": [
      {
       "name": "id",

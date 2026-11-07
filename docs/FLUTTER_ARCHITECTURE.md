@@ -53,6 +53,12 @@ As mandated: Material 3, BLoC/Cubit, Dio, GoRouter, GetIt, Freezed, JSON Seriali
 
 Route `/t/{qrToken}`. Priorities: first paint speed (deferred loading per feature, HTML splash, cached config), then conversion. No login gate. See risk R-1 in `SYSTEM_ARCHITECTURE.md`.
 
+## Design
+
+Shared pieces live in `shared_design_system`: `AppSidebar`, `brandGradient`, `StatCard`, `SectionCard`, `TrendBars`, `NetworkPhoto`, and `CrudPage` with `cardBuilder`, `filters` and `searchText`. Menu, orders and tables use cards; record-heavy screens stay tables.
+
+Depth comes from `depth.dart`: `Raised` (layered shadows tinted by the theme, a lit top edge, lift and lean on hover), `GlossyIcon`, `AuroraBackdrop`, `AmbientBackdrop`, `FloatIn` and `FloatingPanes`. Buttons get their sheen from `glossyButton` in the theme. Rules: colours come from the theme, so the customer app stays in the cafe's own colours; animations play once and never loop, so tests settle; `MediaQuery.disableAnimations` turns movement off. `AppShell` wraps the page in its own semantics container, because a router's page barrier otherwise hides the sidebar from screen readers.
+
 ## Distinct experiences
 
 | App | Layout | Design priority |

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { createHmac } from 'node:crypto';
+import { createHmac, timingSafeEqual } from 'node:crypto';
 import QRCode from 'qrcode';
 import { actorUserId, asTenant, currentLang, requiredUserId, store, tenantId, unscoped } from '../../common/context';
 import { config } from '../../common/config';
@@ -8,6 +8,8 @@ import { decrypt, encrypt, randomToken, sha256, ulid } from '../../common/ids';
 import { assertBranchAllowed, currentBranch, idOf } from '../../common/lookup';
 import { audit, Db, emit, Q, rooms, staffRooms } from '../../infra/db/db.service';
 import { loadSettings } from '../tenancy/settings';
+import { newTablePin, tablePinProof } from './pin';
+import { unpaidOrderAtTable } from './release';
 import { TenancyService } from '../tenancy/tenancy.service';
 
 // Session tokens are derived, so a second diner scanning the same QR joins the same session
@@ -32,7 +34,13 @@ export class TablesService {
     const allowed = store()?.principal?.branchIds;
     if (branch) q = q.where('t.branch_id', '=', branch);
     else if (allowed) q = q.where('t.branch_id', 'in', allowed);
-    return q.orderBy('t.table_number').execute();
+    const rows = await q.orderBy('t.table_number').execute();
+    // Staff read the PIN out to the guests at an occupied table, when the cafe asks for one.
+    if (!(await loadSettings(this.db.q)).tablePinRequired) return rows;
+    const pins = await this.db.q.selectFrom('table_sessions as s').innerJoin('cafe_tables as t', 't.id', 's.table_id').select(['t.public_id', 's.pin_ciphertext'])
+      .where('s.cafe_id', '=', tenantId()).where('s.status', '!=', 'closed').where('s.expires_at', '>', new Date()).where('s.pin_ciphertext', 'is not', null).execute();
+    const byTable = new Map(pins.map((p) => [p.public_id, decrypt(p.pin_ciphertext!)]));
+    return rows.map((r) => ({ ...r, pin: byTable.get(r.public_id) ?? null }));
   }
 
   async create(d: { tableNumber: string; capacity?: number; areaName?: string }) {
@@ -110,20 +118,54 @@ export class TablesService {
       if (!settings.guestOrderingEnabled) throw new AppError(403, 'QR_ORDERING_DISABLED');
       const session = await this.db.tx(async (tx) => {
         const existing = await tx.selectFrom('table_sessions').select(['id', 'public_id', 'expires_at']).where('cafe_id', '=', row.cafe_id).where('table_id', '=', row.table_id).where('status', '!=', 'closed').forUpdate().executeTakeFirst();
-        if (existing && existing.expires_at > new Date()) return { publicId: existing.public_id, token: sessionToken(existing.public_id) };
+        // A table freed after payment belongs to the next party: they start fresh and never see the last guests' orders.
+        if (existing && existing.expires_at > new Date() && row.table_status !== 'available') {
+          // The cafe may have started asking for a PIN after this session opened.
+          if (settings.tablePinRequired) await tx.updateTable('table_sessions').set({ pin_ciphertext: encrypt(newTablePin()) }).where('cafe_id', '=', row.cafe_id).where('id', '=', existing.id).where('pin_ciphertext', 'is', null).execute();
+          return { publicId: existing.public_id, token: sessionToken(existing.public_id) };
+        }
         if (existing) await tx.updateTable('table_sessions').set({ status: 'closed', closed_at: new Date() }).where('cafe_id', '=', row.cafe_id).where('id', '=', existing.id).execute();
         const publicId = ulid();
         const token = sessionToken(publicId);
-        await tx.insertInto('table_sessions').values({ public_id: publicId, cafe_id: row.cafe_id, branch_id: row.branch_id, table_id: row.table_id, token_hash: sha256(token), expires_at: new Date(Date.now() + settings.sessionHours * 3600_000) }).execute();
+        await tx.insertInto('table_sessions').values({ public_id: publicId, cafe_id: row.cafe_id, branch_id: row.branch_id, table_id: row.table_id, token_hash: sha256(token), pin_ciphertext: settings.tablePinRequired ? encrypt(newTablePin()) : null, expires_at: new Date(Date.now() + settings.sessionHours * 3600_000) }).execute();
         await tx.updateTable('cafe_tables').set({ status: 'occupied' }).where('cafe_id', '=', row.cafe_id).where('id', '=', row.table_id).execute();
         await emit(tx, { cafeId: row.cafe_id, branchId: row.branch_id, type: 'table.status_changed', rooms: staffRooms(row.cafe_id, row.branch_id), payload: { tableId: row.table_public_id, status: 'occupied' } });
         return { publicId, token };
       });
       return {
         table: { publicId: row.table_public_id, number: row.table_number }, branchId: row.branch_public_id, slug: row.slug,
-        session: { publicId: session.publicId, token: session.token }, config: await this.tenancy.configFor(row.cafe_id, lang ?? currentLang()),
+        session: { publicId: session.publicId, token: session.token, pinRequired: settings.tablePinRequired }, config: await this.tenancy.configFor(row.cafe_id, lang ?? currentLang()),
       };
     });
+  }
+
+  /// A guest entering the PIN staff gave them. Returns the proof their device sends with each order.
+  async verifyPin(pin: string) {
+    const s = await this.db.q.selectFrom('table_sessions').select(['public_id', 'pin_ciphertext']).where('cafe_id', '=', tenantId()).where('id', '=', store()!.principal!.tableSessionId!).executeTakeFirstOrThrow();
+    if (!s.pin_ciphertext) return { proof: tablePinProof(s.public_id) };
+    const want = Buffer.from(decrypt(s.pin_ciphertext));
+    const got = Buffer.from(pin);
+    if (want.length !== got.length || !timingSafeEqual(want, got)) throw new AppError(403, 'TABLE_PIN_WRONG');
+    return { proof: tablePinProof(s.public_id) };
+  }
+
+  /// Staff marking a table free by hand. Refused while anything on it is owed, so no bill is left behind.
+  async release(tablePublicId: string) {
+    await this.db.tx(async (tx) => {
+      const t = await tx.selectFrom('cafe_tables').select(['id', 'branch_id', 'status']).where('cafe_id', '=', tenantId()).where('public_id', '=', tablePublicId).where('deleted_at', 'is', null).forUpdate().executeTakeFirst();
+      if (!t) throw notFound('TABLE_NOT_FOUND');
+      assertBranchAllowed(t.branch_id);
+      const s = await tx.selectFrom('table_sessions').select(['id', 'public_id']).where('cafe_id', '=', tenantId()).where('table_id', '=', t.id).where('status', '!=', 'closed').forUpdate().executeTakeFirst();
+      if (await unpaidOrderAtTable(tx, tenantId(), t.id, s?.id ?? null)) throw conflict('SESSION_HAS_UNPAID_ORDERS');
+      if (s) {
+        await tx.updateTable('table_sessions').set({ status: 'closed', closed_at: new Date(), closed_by_user_id: requiredUserId() }).where('cafe_id', '=', tenantId()).where('id', '=', s.id).execute();
+        await emit(tx, { cafeId: tenantId(), branchId: t.branch_id, type: 'session.closed', rooms: [rooms.session(s.public_id)], payload: { sessionId: s.public_id } });
+      }
+      await tx.updateTable('cafe_tables').set({ status: 'available' }).where('cafe_id', '=', tenantId()).where('id', '=', t.id).execute();
+      await audit(tx, { action: 'table.released', entityType: 'table', entityId: tablePublicId, before: { status: t.status } });
+      await emit(tx, { cafeId: tenantId(), branchId: t.branch_id, type: 'table.status_changed', rooms: staffRooms(tenantId(), t.branch_id), payload: { tableId: tablePublicId, status: 'available' } });
+    });
+    return { ok: true };
   }
 
   async closeSession(publicId: string) {

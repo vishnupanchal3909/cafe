@@ -13,6 +13,9 @@ abstract class OrderRepository {
   Future<void> abandonPayment(String paymentId);
   Future<Map<String, dynamic>> paymentStatus(String paymentId);
   Future<void> serviceRequest(String type);
+
+  /// Checks the PIN staff gave the guest. Afterwards this device may order at the table.
+  Future<void> enterTablePin(String pin);
   Future<void> review(String orderId, int rating, String? comment);
 }
 
@@ -24,6 +27,9 @@ String newIdempotencyKey() {
 class ApiOrderRepository implements OrderRepository {
   ApiOrderRepository(this._api);
   final ApiClient _api;
+
+  @override
+  Future<void> enterTablePin(String pin) async => _api.tablePin = (await _api.post<Map<String, dynamic>>('/customer/table-pin', body: {'pin': pin}))['proof'] as String;
 
   @override
   Future<CafeOrder> place(Cart cart, {String? notes, String? coupon, required String language, required String idempotencyKey}) async => CafeOrder.fromJson(await _api.post<Map<String, dynamic>>('/customer/orders', idempotencyKey: idempotencyKey, body: {

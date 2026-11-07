@@ -2175,6 +2175,258 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Opening secure checkout…'**
   String get openingCheckout;
+
+  /// No description provided for @welcomeBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome back'**
+  String get welcomeBack;
+
+  /// No description provided for @thisMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'This month'**
+  String get thisMonth;
+
+  /// No description provided for @revenueTrend.
+  ///
+  /// In en, this message translates to:
+  /// **'Revenue by day'**
+  String get revenueTrend;
+
+  /// No description provided for @recentOrders.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent orders'**
+  String get recentOrders;
+
+  /// No description provided for @addPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Add photo'**
+  String get addPhoto;
+
+  /// No description provided for @changePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Change photo'**
+  String get changePhoto;
+
+  /// No description provided for @removePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove photo'**
+  String get removePhoto;
+
+  /// No description provided for @filterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get filterAll;
+
+  /// No description provided for @available.
+  ///
+  /// In en, this message translates to:
+  /// **'Available'**
+  String get available;
+
+  /// No description provided for @loginTagline.
+  ///
+  /// In en, this message translates to:
+  /// **'Run your cafe beautifully, from one place.'**
+  String get loginTagline;
+
+  /// No description provided for @signInSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to continue'**
+  String get signInSubtitle;
+
+  /// No description provided for @showPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Show password'**
+  String get showPassword;
+
+  /// No description provided for @hidePassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide password'**
+  String get hidePassword;
+
+  /// No description provided for @back.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get back;
+
+  /// No description provided for @adminConsole.
+  ///
+  /// In en, this message translates to:
+  /// **'Platform console'**
+  String get adminConsole;
+
+  /// No description provided for @adminLoginTagline.
+  ///
+  /// In en, this message translates to:
+  /// **'Every cafe on the platform, at a glance.'**
+  String get adminLoginTagline;
+
+  /// No description provided for @kitchenDisplay.
+  ///
+  /// In en, this message translates to:
+  /// **'Kitchen display'**
+  String get kitchenDisplay;
+
+  /// No description provided for @kitchenLoginTagline.
+  ///
+  /// In en, this message translates to:
+  /// **'Every ticket, clear from across the kitchen.'**
+  String get kitchenLoginTagline;
+
+  /// No description provided for @customerLoginTagline.
+  ///
+  /// In en, this message translates to:
+  /// **'Save favourites, track orders and earn rewards.'**
+  String get customerLoginTagline;
+
+  /// No description provided for @signInToOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to order'**
+  String get signInToOrder;
+
+  /// No description provided for @signInToOrderHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse as much as you like. To place an order, sign in or create an account.'**
+  String get signInToOrderHint;
+
+  /// No description provided for @roleOwner.
+  ///
+  /// In en, this message translates to:
+  /// **'Owner'**
+  String get roleOwner;
+
+  /// No description provided for @markAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark available'**
+  String get markAvailable;
+
+  /// No description provided for @tableReleased.
+  ///
+  /// In en, this message translates to:
+  /// **'Table is now available'**
+  String get tableReleased;
+
+  /// No description provided for @tableHasUnpaid.
+  ///
+  /// In en, this message translates to:
+  /// **'This table still has unpaid orders. Settle the bill first.'**
+  String get tableHasUnpaid;
+
+  /// No description provided for @unpaidForMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'Unpaid for {minutes} min'**
+  String unpaidForMinutes(int minutes);
+
+  /// No description provided for @tablePin.
+  ///
+  /// In en, this message translates to:
+  /// **'PIN {pin}'**
+  String tablePin(String pin);
+
+  /// No description provided for @enterTablePin.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the table PIN'**
+  String get enterTablePin;
+
+  /// No description provided for @tablePinHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask the staff for the 4-digit PIN for your table.'**
+  String get tablePinHint;
+
+  /// No description provided for @tablePinWrong.
+  ///
+  /// In en, this message translates to:
+  /// **'That PIN doesn\'t match. Please check with the staff.'**
+  String get tablePinWrong;
+
+  /// No description provided for @setTablePin.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask guests for a table PIN before ordering'**
+  String get setTablePin;
+
+  /// No description provided for @setSessionEndAfterPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'End the guests\' table session this long after they pay'**
+  String get setSessionEndAfterPayment;
+
+  /// No description provided for @setUnpaidAlert.
+  ///
+  /// In en, this message translates to:
+  /// **'Warn staff about orders still unpaid after'**
+  String get setUnpaidAlert;
+
+  /// No description provided for @forgotPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot password?'**
+  String get forgotPassword;
+
+  /// No description provided for @resetPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Set a new password'**
+  String get resetPassword;
+
+  /// No description provided for @newPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'New password'**
+  String get newPassword;
+
+  /// No description provided for @passwordResetDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Password changed. You can sign in now.'**
+  String get passwordResetDone;
+
+  /// No description provided for @resetLinkInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'This reset link has expired or was already used.'**
+  String get resetLinkInvalid;
+
+  /// No description provided for @passwordResetUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Password reset isn\'t available yet.'**
+  String get passwordResetUnavailable;
+
+  /// No description provided for @minutesUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'min'**
+  String get minutesUnit;
+
+  /// No description provided for @resetLinkSent.
+  ///
+  /// In en, this message translates to:
+  /// **'If that email has an account, a reset link is on its way.'**
+  String get resetLinkSent;
+
+  /// No description provided for @countsForDay.
+  ///
+  /// In en, this message translates to:
+  /// **'counts for {date}'**
+  String countsForDay(String date);
 }
 
 class _AppLocalizationsDelegate

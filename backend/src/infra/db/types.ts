@@ -1742,6 +1742,7 @@ export interface TableSessions {
   opened_at: Generated<Date>;
   opened_by_user_id: number | null;
   party_size: number | null;
+  pin_ciphertext: Buffer | null;
   public_id: string;
   status: Generated<"closed" | "closing" | "open">;
   table_id: number;

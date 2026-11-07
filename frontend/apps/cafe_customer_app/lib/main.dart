@@ -17,8 +17,12 @@ import 'features/session/presentation/qr_entry_page.dart';
 import 'features/session/presentation/session_cubit.dart';
 
 void main() {
+  // Restoring a saved login reads the phone's secure storage, which needs Flutter's bindings first.
+  WidgetsFlutterBinding.ensureInitialized();
   usePathUrlStrategy();
   configureDependencies();
+  // A guest who signed in earlier stays signed in after a reload. Browsing never waits for this.
+  GetIt.I<ApiClient>().restoreSession();
   runApp(const CustomerApp());
 }
 
@@ -30,6 +34,8 @@ final router = GoRouter(initialLocation: '/', routes: [
   GoRoute(path: '/orders', builder: (_, _) => const SessionOrdersPage()),
   GoRoute(path: '/orders/:id', builder: (_, s) => OrderTrackPage(orderId: s.pathParameters['id']!)),
   GoRoute(path: '/account', builder: (_, _) => const AccountPage()),
+  GoRoute(path: '/signin', builder: (_, _) => const SignInPage()),
+  GoRoute(path: '/reset-password', builder: (_, s) => ResetPasswordPage(token: s.uri.queryParameters['token'] ?? '')),
 ]);
 
 class CustomerApp extends StatelessWidget {

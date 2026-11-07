@@ -57,6 +57,12 @@ extension StatusLabels on AppLocalizations {
         'INVALID_CREDENTIALS' => invalidCredentials,
         'ACCOUNT_LOCKED' => accountLocked,
         'RATE_LIMITED' => rateLimited,
+        'CUSTOMER_LOGIN_REQUIRED' => signInToOrder,
+        'SESSION_HAS_UNPAID_ORDERS' => tableHasUnpaid,
+        'TABLE_PIN_REQUIRED' => enterTablePin,
+        'TABLE_PIN_WRONG' => tablePinWrong,
+        'RESET_LINK_INVALID' => resetLinkInvalid,
+        'PASSWORD_RESET_UNAVAILABLE' => passwordResetUnavailable,
         _ => serverMessage.isNotEmpty ? serverMessage : errorTitle,
       };
 }

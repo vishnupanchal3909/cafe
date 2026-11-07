@@ -1,1 +1,4 @@
-const apiBaseUrl = String.fromEnvironment('API_URL', defaultValue: 'http://localhost:3000');
+const apiBaseUrl = String.fromEnvironment(
+  'API_URL',
+  defaultValue: 'http://localhost:3100',
+);

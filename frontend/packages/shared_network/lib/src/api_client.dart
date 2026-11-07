@@ -29,6 +29,9 @@ class ApiClient {
   String? branchId;
   String? tableSession;
 
+  /// Proof that this device entered the table's PIN, when the cafe asks for one.
+  String? tablePin;
+
   /// Recorded in the audit log when a platform user reads a cafe's data.
   String? accessReason;
   Future<bool>? _refreshing;
@@ -42,6 +45,7 @@ class ApiClient {
     o.headers['Accept-Language'] = language;
     if (branchId != null) o.headers['X-Branch-Id'] = branchId;
     if (tableSession != null) o.headers['X-Table-Session'] = tableSession;
+    if (tablePin != null) o.headers['X-Table-Pin'] = tablePin;
     if (accessReason != null) o.headers['X-Access-Reason'] = accessReason;
     h.next(o);
   }

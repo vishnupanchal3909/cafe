@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shared_core/shared_core.dart';
 import 'package:shared_design_system/shared_design_system.dart';
 import 'package:shared_localization/shared_localization.dart';
@@ -22,8 +23,15 @@ class _AccountPageState extends State<AccountPage> {
     if (!_repo.signedIn) {
       return LoginView(
         title: context.l10n.signIn,
+        tagline: context.l10n.customerLoginTagline,
+        icon: Icons.person_outline,
+        paneIcons: const [Icons.favorite_outline, Icons.receipt_long, Icons.loyalty_outlined],
+        onBack: () => context.canPop() ? context.pop() : context.go('/menu'),
         onSubmit: (e, p, _) async { await _repo.signIn(e, p); if (mounted) setState(() {}); },
-        footer: TextButton(onPressed: _register, child: Text(context.l10n.createAccount)),
+        footer: Column(mainAxisSize: MainAxisSize.min, children: [
+          TextButton(onPressed: () async { if (await registerCustomer(context) && mounted) setState(() {}); }, child: Text(context.l10n.createAccount)),
+          const ForgotPasswordLink(),
+        ]),
       );
     }
     final l = context.l10n;
@@ -33,38 +41,57 @@ class _AccountPageState extends State<AccountPage> {
         IconButton(tooltip: l.signOut, icon: const Icon(Icons.logout), onPressed: () async { await _repo.signOut(); if (mounted) setState(() {}); }),
       ]),
       body: ListView(padding: const EdgeInsets.all(Space.md), children: [
-        LoadViewBox(load: _repo.profile, builder: (p) => ListTile(leading: const Icon(Icons.person), title: Text('${p['fullName'] ?? ''}'), subtitle: Text('${p['email'] ?? ''}'))),
-        if (slug != null) ...[
-          LoadViewBox(load: () => _repo.loyalty(slug), builder: (d) => ListTile(leading: const Icon(Icons.loyalty), title: Text(l.offers), trailing: Text('${d['balance']}'))),
-          ListTile(leading: const Icon(Icons.favorite_border), title: Text(l.favorites), trailing: IconButton(tooltip: l.add, icon: const Icon(Icons.add), onPressed: () async {
-            try { await _repo.addFavorite(slug); if (mounted) setState(() {}); } on ApiFailure catch (f) { if (mounted) showFailure(context, f); }
-          })),
-        ],
-        LoadViewBox(load: _repo.favorites, builder: (rows) => Column(children: [for (final f in rows) ListTile(dense: true, leading: const Icon(Icons.favorite), title: Text('${f['display_name']}'))])),
-        if (slug != null) ...[
-          const Divider(),
+        LoadViewBox(load: _repo.profile, builder: (p) {
+          final name = '${p['fullName'] ?? ''}';
+          return Padding(
+            padding: const EdgeInsets.only(bottom: Space.md),
+            child: Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(borderRadius: BorderRadius.circular(24), gradient: brandGradient(Theme.of(context).colorScheme), boxShadow: depthShadows(Theme.of(context).colorScheme, lift: 1.3)),
+              child: Row(children: [
+                GlossyIcon(size: 60, circle: true, color: Theme.of(context).colorScheme.secondary, child: Text(name.isEmpty ? '' : name.characters.first.toUpperCase(), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 26))),
+                const SizedBox(width: Space.md),
+                Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text(name, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.w800)),
+                  Text('${p['email'] ?? ''}', maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white70)),
+                ])),
+              ]),
+            ),
+          );
+        }),
+        ..._group(context, [
+          if (slug != null) ...[
+            LoadViewBox(load: () => _repo.loyalty(slug), builder: (d) => ListTile(leading: const Icon(Icons.loyalty), title: Text(l.offers), trailing: Text('${d['balance']}'))),
+            ListTile(leading: const Icon(Icons.favorite_border), title: Text(l.favorites), trailing: IconButton(tooltip: l.add, icon: const Icon(Icons.add), onPressed: () async {
+              try { await _repo.addFavorite(slug); if (mounted) setState(() {}); } on ApiFailure catch (f) { if (mounted) showFailure(context, f); }
+            })),
+          ],
+          LoadViewBox(load: _repo.favorites, builder: (rows) => Column(children: [for (final f in rows) ListTile(dense: true, leading: const Icon(Icons.favorite), title: Text('${f['display_name']}'))])),
+        ]),
+        if (slug != null) ..._group(context, [
           ListTile(leading: const Icon(Icons.bookmark_border), title: Text(l.wishlist, style: Theme.of(context).textTheme.titleMedium)),
           LoadViewBox(load: () => _repo.wishlist(slug), builder: (rows) => Column(children: [
             for (final w in rows) ListTile(dense: true, title: Text('${w['name']}'), trailing: IconButton(tooltip: l.delete, icon: const Icon(Icons.close), onPressed: () async { await _repo.removeWish(slug, w['publicId'] as String); if (mounted) setState(() {}); })),
           ])),
           ListTile(leading: const Icon(Icons.event_seat), title: Text(l.reserveTable), trailing: const Icon(Icons.chevron_right), onTap: () => _reserve(slug)),
-        ],
-        const Divider(),
-        ListTile(leading: const Icon(Icons.place_outlined), title: Text(l.addresses, style: Theme.of(context).textTheme.titleMedium), trailing: IconButton(tooltip: l.add, icon: const Icon(Icons.add), onPressed: _addAddress)),
-        LoadViewBox(load: _repo.addresses, builder: (rows) => Column(children: [
-          for (final x in rows) ListTile(dense: true, title: Text('${x['label'] ?? ''} ${x['address_line1']}'), subtitle: Text('${x['city']}'), trailing: IconButton(tooltip: l.delete, icon: const Icon(Icons.close), onPressed: () async { await _repo.removeAddress(x['public_id'] as String); if (mounted) setState(() {}); })),
-        ])),
-        const Divider(),
-        ListTile(title: Text(l.myOrders, style: Theme.of(context).textTheme.titleMedium)),
-        LoadViewBox(load: _repo.history, builder: (rows) => Column(children: [
-          for (final o in rows)
-            ListTile(
-              title: Text('${o['cafe']}'),
-              subtitle: Text('${l.orderNumber(o['order_number'] as int)} · ${l.orderStatus(o['status'] as String)}'),
-              trailing: Text(context.money.formatAmount(o['total_amount'] as String, o['currency_code'] as String)),
-            ),
-        ])),
-        const Divider(),
+        ]),
+        ..._group(context, [
+          ListTile(leading: const Icon(Icons.place_outlined), title: Text(l.addresses, style: Theme.of(context).textTheme.titleMedium), trailing: IconButton(tooltip: l.add, icon: const Icon(Icons.add), onPressed: _addAddress)),
+          LoadViewBox(load: _repo.addresses, builder: (rows) => Column(children: [
+            for (final x in rows) ListTile(dense: true, title: Text('${x['label'] ?? ''} ${x['address_line1']}'), subtitle: Text('${x['city']}'), trailing: IconButton(tooltip: l.delete, icon: const Icon(Icons.close), onPressed: () async { await _repo.removeAddress(x['public_id'] as String); if (mounted) setState(() {}); })),
+          ])),
+        ]),
+        ..._group(context, [
+          ListTile(leading: const Icon(Icons.receipt_long), title: Text(l.myOrders, style: Theme.of(context).textTheme.titleMedium)),
+          LoadViewBox(load: _repo.history, builder: (rows) => Column(children: [
+            for (final o in rows)
+              ListTile(
+                title: Text('${o['cafe']}'),
+                subtitle: Text('${l.orderNumber(o['order_number'] as int)} · ${l.orderStatus(o['status'] as String)}'),
+                trailing: Text(context.money.formatAmount(o['total_amount'] as String, o['currency_code'] as String)),
+              ),
+          ])),
+        ]),
         TextButton.icon(
           icon: const Icon(Icons.delete_forever),
           label: Text(l.delete),
@@ -79,6 +106,12 @@ class _AccountPageState extends State<AccountPage> {
       ]),
     );
   }
+
+  /// One raised card holding a related set of rows.
+  List<Widget> _group(BuildContext context, List<Widget> children) => [
+        Raised(padding: const EdgeInsets.symmetric(vertical: Space.xs), child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: children)),
+        const SizedBox(height: Space.md),
+      ];
 
   Future<void> _addAddress() async {
     final l = context.l10n;
@@ -106,17 +139,44 @@ class _AccountPageState extends State<AccountPage> {
     }
   }
 
-  Future<void> _register() async {
+}
+
+/// Returns true once an account exists and is signed in.
+Future<bool> registerCustomer(BuildContext context) async {
+  final l = context.l10n;
+  final lang = context.read<SessionCubit>().state.language;
+  final v = await showFormDialog(context, title: l.createAccount, fields: [CrudField('name', l.name), CrudField('email', l.email), CrudField('password', l.password, obscure: true)]);
+  if (v == null) return false;
+  try {
+    await GetIt.I<AccountRepository>().register(v['email']!, v['password']!, v['name']!, lang);
+    return true;
+  } on ApiFailure catch (f) {
+    if (context.mounted) showFailure(context, f);
+    return false;
+  }
+}
+
+/// Where the cart sends a guest who wants to order. It closes with true once they are signed in.
+class SignInPage extends StatelessWidget {
+  const SignInPage({super.key});
+  @override
+  Widget build(BuildContext context) {
     final l = context.l10n;
-    final lang = context.read<SessionCubit>().state.language;
-    final v = await showFormDialog(context, title: l.createAccount, fields: [CrudField('name', l.name), CrudField('email', l.email), CrudField('password', l.password, obscure: true)]);
-    if (v == null) return;
-    try {
-      await _repo.register(v['email']!, v['password']!, v['name']!, lang);
-      if (mounted) setState(() {});
-    } on ApiFailure catch (f) {
-      if (mounted) showFailure(context, f);
-    }
+    return LoginView(
+      title: l.signInToOrder,
+      tagline: l.signInToOrderHint,
+      icon: Icons.shopping_bag_outlined,
+      paneIcons: const [Icons.restaurant_menu, Icons.shopping_bag_outlined, Icons.receipt_long],
+      onBack: () => context.pop(false),
+      onSubmit: (e, p, _) async {
+        await GetIt.I<AccountRepository>().signIn(e, p);
+        if (context.mounted) context.pop(true);
+      },
+      footer: Column(mainAxisSize: MainAxisSize.min, children: [
+        TextButton(onPressed: () async { if (await registerCustomer(context) && context.mounted) context.pop(true); }, child: Text(l.createAccount)),
+        const ForgotPasswordLink(),
+      ]),
+    );
   }
 }
 
@@ -133,4 +193,90 @@ class LoadViewBox<T> extends StatelessWidget {
           return builder(s.data as T);
         },
       );
+}
+
+/// Offered only when the server can actually email a reset link. Until an email provider is set up, it stays hidden.
+class ForgotPasswordLink extends StatelessWidget {
+  const ForgotPasswordLink({super.key});
+  @override
+  Widget build(BuildContext context) => FutureBuilder<bool>(
+        future: GetIt.I<AccountRepository>().passwordResetAvailable().catchError((_) => false),
+        builder: (c, snap) => snap.data != true
+            ? const SizedBox.shrink()
+            : TextButton(
+                onPressed: () async {
+                  final l = c.l10n;
+                  final v = await showFormDialog(c, title: l.forgotPassword, fields: [CrudField('email', l.email)]);
+                  if (v == null || !c.mounted) return;
+                  try {
+                    await GetIt.I<AccountRepository>().requestPasswordReset(v['email']!);
+                    if (c.mounted) ScaffoldMessenger.of(c).showSnackBar(SnackBar(content: Text(l.resetLinkSent)));
+                  } on ApiFailure catch (f) {
+                    if (c.mounted) showFailure(c, f);
+                  }
+                },
+                child: Text(c.l10n.forgotPassword),
+              ),
+      );
+}
+
+/// Where a reset link from the email lands. The link works once and signs the person out everywhere else.
+class ResetPasswordPage extends StatefulWidget {
+  const ResetPasswordPage({super.key, required this.token});
+  final String token;
+  @override
+  State<ResetPasswordPage> createState() => _ResetPasswordPageState();
+}
+
+class _ResetPasswordPageState extends State<ResetPasswordPage> {
+  final _password = TextEditingController();
+  bool _busy = false;
+
+  @override
+  void dispose() { _password.dispose(); super.dispose(); }
+
+  Future<void> _save() async {
+    final l = context.l10n;
+    if (_password.text.length < 10) { showFailure(context, ApiFailure(code: 'VALIDATION', message: l.invalidValue)); return; }
+    setState(() => _busy = true);
+    try {
+      await GetIt.I<AccountRepository>().confirmPasswordReset(widget.token, _password.text);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l.passwordResetDone)));
+      context.go('/account');
+    } on ApiFailure catch (f) {
+      if (mounted) showFailure(context, f);
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l = context.l10n;
+    return Scaffold(
+      body: AuroraBackdrop(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(Space.md),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 440),
+              child: Raised(
+                padding: const EdgeInsets.all(28),
+                child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, mainAxisSize: MainAxisSize.min, children: [
+                  const Center(child: GlossyIcon(icon: Icons.lock_reset, size: 64)),
+                  const SizedBox(height: Space.md),
+                  Text(l.resetPassword, textAlign: TextAlign.center, style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800)),
+                  const SizedBox(height: Space.lg),
+                  TextField(controller: _password, obscureText: true, autofillHints: const [AutofillHints.newPassword], decoration: InputDecoration(labelText: l.newPassword, prefixIcon: const Icon(Icons.lock_outline)), onSubmitted: (_) => _save()),
+                  const SizedBox(height: Space.lg),
+                  FilledButton(onPressed: _busy ? null : _save, child: Text(l.save)),
+                ]),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }

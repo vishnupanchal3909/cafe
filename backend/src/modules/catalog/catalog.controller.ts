@@ -119,6 +119,8 @@ export class CatalogController {
   @Delete('products/:id') @Requires('menu.manage') deleteProduct(@Param('id') id: string) { return this.svc.deleteProduct(id); }
   @Post('products/:id/variants') @Requires('menu.manage') addVariant(@Param('id') id: string, @Body() d: VariantDto) { return this.svc.addVariant(id, d); }
   @Delete('variants/:id') @Requires('menu.manage') delVariant(@Param('id') id: string) { return this.svc.deleteVariant(id); }
+  @Put('products/:id/image') @Requires('menu.manage') setImage(@Param('id') id: string, @Body() d: AssetDto) { return this.svc.setProductImage(id, d.assetId); }
+  @Delete('products/:id/image') @Requires('menu.manage') removeImage(@Param('id') id: string) { return this.svc.removeProductImage(id); }
   @Post('products/:id/images') @Requires('menu.manage') addImage(@Param('id') id: string, @Body() d: AssetDto) { return this.svc.addProductImage(id, d.assetId); }
   @Post('addon-groups') @Requires('menu.manage') addonGroup(@Body() d: AddonGroupDto) { return this.svc.createAddonGroup(d); }
   @Put('products/:id/addon-groups') @Requires('menu.manage') linkGroups(@Param('id') id: string, @Body() d: IdsDto) { return this.svc.setProductAddonGroups(id, d.ids); }

@@ -34,50 +34,49 @@ class _MenuPageState extends State<MenuPage> {
       final config = ctx.config;
       final repo = GetIt.I<MenuRepository>();
       return Scaffold(
-        appBar: AppBar(
-          title: Row(children: [
-            if (config.cafe.logoUrl != null) ...[
-              ClipRRect(borderRadius: BorderRadius.circular(8), child: Image.network('$apiBaseUrl${config.cafe.logoUrl}', height: 36, width: 36, fit: BoxFit.cover, errorBuilder: (_, _, _) => const SizedBox.shrink())),
-              const SizedBox(width: Space.sm),
-            ],
-            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(config.cafe.name, overflow: TextOverflow.ellipsis),
-              Text(l.welcomeTable(ctx.tableNumber), style: Theme.of(context).textTheme.labelMedium),
-            ])),
-          ]),
-          actions: [
-            if (config.languages.length > 1) LanguageMenu(languages: [for (final lang in config.languages) (lang.code, lang.nativeName)], onSelected: c.read<SessionCubit>().setLanguage),
-            PopupMenuButton<String>(
-              icon: const Icon(Icons.room_service_outlined),
-              tooltip: l.callStaff,
-              onSelected: (type) async {
-                try {
-                  await GetIt.I<OrderRepository>().serviceRequest(type);
-                  if (c.mounted) ScaffoldMessenger.of(c).showSnackBar(SnackBar(content: Text(l.requestSent)));
-                } on ApiFailure catch (f) {
-                  if (c.mounted) showFailure(c, f);
-                }
-              },
-              itemBuilder: (_) => [PopupMenuItem(value: 'waiter', child: Text(l.callWaiter)), PopupMenuItem(value: 'bill', child: Text(l.requestBill)), PopupMenuItem(value: 'staff', child: Text(l.callStaff))],
-            ),
-            IconButton(tooltip: l.myOrders, icon: const Icon(Icons.receipt_long), onPressed: () => c.push('/orders')),
-            IconButton(tooltip: l.profile, icon: const Icon(Icons.person_outline), onPressed: () => c.push('/account')),
-          ],
-        ),
-        floatingActionButton: BlocBuilder<CartCubit, Cart>(
-          builder: (c, cart) => cart.isEmpty
-              ? const SizedBox.shrink()
-              : FloatingActionButton.extended(
-                  onPressed: () => c.push('/cart'),
-                  icon: Badge(label: Text('${cart.itemCount}'), child: const Icon(Icons.shopping_bag_outlined)),
-                  label: Row(mainAxisSize: MainAxisSize.min, children: [Text(l.viewCart), const SizedBox(width: Space.sm), MoneyText(cart.previewTotal!)]),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        floatingActionButton: BlocBuilder<CartCubit, Cart>(builder: (c, cart) => cart.isEmpty ? const SizedBox.shrink() : _CartBar(cart: cart)),
+        body: NestedScrollView(
+          headerSliverBuilder: (_, _) => [
+            SliverAppBar(
+              pinned: true,
+              stretch: true,
+              expandedHeight: Breakpoints.isCompact(c) ? 220 : 260,
+              foregroundColor: Colors.white,
+              backgroundColor: toneOf(Theme.of(c).colorScheme.primary, 0.2),
+              actions: [
+                if (config.languages.length > 1) LanguageMenu(languages: [for (final lang in config.languages) (lang.code, lang.nativeName)], onSelected: c.read<SessionCubit>().setLanguage),
+                PopupMenuButton<String>(
+                  icon: const Icon(Icons.room_service_outlined),
+                  tooltip: l.callStaff,
+                  onSelected: (type) async {
+                    try {
+                      await GetIt.I<OrderRepository>().serviceRequest(type);
+                      if (c.mounted) ScaffoldMessenger.of(c).showSnackBar(SnackBar(content: Text(l.requestSent)));
+                    } on ApiFailure catch (f) {
+                      if (c.mounted) showFailure(c, f);
+                    }
+                  },
+                  itemBuilder: (_) => [PopupMenuItem(value: 'waiter', child: Text(l.callWaiter)), PopupMenuItem(value: 'bill', child: Text(l.requestBill)), PopupMenuItem(value: 'staff', child: Text(l.callStaff))],
                 ),
-        ),
-        body: LoadView<Menu>(
-          key: ValueKey('${ctx.slug}/${session.language}'),
-          load: () => repo.load(slug: ctx.slug, language: session.language, branchId: ctx.branchId),
-          isEmpty: (m) => m.products.isEmpty,
-          builder: (c, menu, reload) => _buildMenu(c, config, menu),
+                IconButton(tooltip: l.myOrders, icon: const Icon(Icons.receipt_long), onPressed: () => c.push('/orders')),
+                IconButton(tooltip: l.profile, icon: const Icon(Icons.person_outline), onPressed: () => c.push('/account')),
+              ],
+              flexibleSpace: FlexibleSpaceBar(
+                collapseMode: CollapseMode.parallax,
+                centerTitle: false,
+                titlePadding: const EdgeInsetsDirectional.only(start: Space.md, bottom: 14, end: 160),
+                title: Text(config.cafe.name, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, shadows: [Shadow(color: Colors.black54, blurRadius: 8)])),
+                background: _MenuHero(config: config, table: l.welcomeTable(ctx.tableNumber)),
+              ),
+            ),
+          ],
+          body: LoadView<Menu>(
+            key: ValueKey('${ctx.slug}/${session.language}'),
+            load: () => repo.load(slug: ctx.slug, language: session.language, branchId: ctx.branchId),
+            isEmpty: (m) => m.products.isEmpty,
+            builder: (c, menu, reload) => _buildMenu(c, config, menu),
+          ),
         ),
       );
     });
@@ -96,20 +95,32 @@ class _MenuPageState extends State<MenuPage> {
       if (config.banners.isNotEmpty)
         SliverToBoxAdapter(
           child: SizedBox(
-            height: 140,
+            height: 190,
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.all(Space.md),
+              padding: const EdgeInsets.fromLTRB(Space.md, Space.md, Space.md, Space.lg),
               itemCount: config.banners.length,
-              separatorBuilder: (_, _) => const SizedBox(width: Space.sm),
+              separatorBuilder: (_, _) => const SizedBox(width: Space.md),
               itemBuilder: (_, i) {
                 final b = config.banners[i];
-                return ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Stack(children: [
-                    Image.network('$apiBaseUrl${b.imageUrl}', width: 280, height: 108, fit: BoxFit.cover, errorBuilder: (_, _, _) => Container(width: 280, color: Theme.of(c).colorScheme.secondaryContainer)),
-                    PositionedDirectional(start: Space.sm, bottom: Space.sm, child: Text(b.title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700, shadows: [Shadow(blurRadius: 6)]))),
-                  ]),
+                return SizedBox(
+                  width: 300,
+                  child: Raised(
+                    tilt: true,
+                    child: Stack(fit: StackFit.expand, children: [
+                      NetworkPhoto(url: '$apiBaseUrl${b.imageUrl}'),
+                      const DecoratedBox(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0x00000000), Color(0xAA000000)]))),
+                      PositionedDirectional(
+                        start: Space.md,
+                        end: Space.md,
+                        bottom: Space.md,
+                        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                          Text(b.title, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 18)),
+                          if (b.subtitle != null) Text(b.subtitle!, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white70)),
+                        ]),
+                      ),
+                    ]),
+                  ),
                 );
               },
             ),
@@ -117,14 +128,17 @@ class _MenuPageState extends State<MenuPage> {
         ),
       SliverToBoxAdapter(
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(Space.md, Space.sm, Space.md, 0),
-          child: TextField(decoration: InputDecoration(prefixIcon: const Icon(Icons.search), hintText: l.search, isDense: true), onChanged: (v) => setState(() => _query = v)),
+          padding: const EdgeInsets.fromLTRB(Space.md, Space.md, Space.md, 0),
+          child: DecoratedBox(
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(14), boxShadow: depthShadows(Theme.of(c).colorScheme, lift: 0.6)),
+            child: TextField(decoration: InputDecoration(prefixIcon: const Icon(Icons.search), hintText: l.search), onChanged: (v) => setState(() => _query = v)),
+          ),
         ),
       ),
       SliverToBoxAdapter(
         child: SizedBox(
-          height: 56,
-          child: ListView(scrollDirection: Axis.horizontal, padding: const EdgeInsets.symmetric(horizontal: Space.md, vertical: Space.sm), children: [
+          height: 68,
+          child: ListView(scrollDirection: Axis.horizontal, padding: const EdgeInsets.symmetric(horizontal: Space.md, vertical: Space.md), children: [
             ChoiceChip(label: Text(l.allCategories), selected: _category == null, onSelected: (_) => setState(() => _category = null)),
             for (final cat in menu.categories) ...[const SizedBox(width: Space.sm), ChoiceChip(label: Text(cat.name), selected: _category == cat.publicId, onSelected: (_) => setState(() => _category = cat.publicId))],
             const SizedBox(width: Space.sm),
@@ -138,14 +152,14 @@ class _MenuPageState extends State<MenuPage> {
         SliverPadding(
           padding: const EdgeInsets.fromLTRB(Space.md, 0, Space.md, 96),
           sliver: SliverGrid(
-            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: 260, mainAxisSpacing: Space.sm, crossAxisSpacing: Space.sm, childAspectRatio: 0.8),
+            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: 260, mainAxisSpacing: Space.md, crossAxisSpacing: Space.md, childAspectRatio: 0.7),
             delegate: SliverChildBuilderDelegate((_, i) => ProductCard(product: visible[i], grid: true), childCount: visible.length),
           ),
         )
       else
         SliverPadding(
           padding: const EdgeInsets.fromLTRB(Space.md, 0, Space.md, 96),
-          sliver: SliverList.separated(itemCount: visible.length, separatorBuilder: (_, _) => const SizedBox(height: Space.sm), itemBuilder: (_, i) => ProductCard(product: visible[i], grid: false)),
+          sliver: SliverList.separated(itemCount: visible.length, separatorBuilder: (_, _) => const SizedBox(height: Space.md), itemBuilder: (_, i) => ProductCard(product: visible[i], grid: false)),
         ),
     ]);
   }
@@ -159,29 +173,172 @@ class ProductCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
-    final image = product.imageUrls.isEmpty
-        ? null
-        : Image.network('$apiBaseUrl${product.imageUrls.first}', fit: BoxFit.cover, width: grid ? double.infinity : 88, height: grid ? 110 : 88, errorBuilder: (_, _, _) => const SizedBox.shrink());
-    final info = Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
-      Row(children: [
-        if (l.dietary(product.dietaryClass).isNotEmpty) ...[
-          Tooltip(message: l.dietary(product.dietaryClass), child: Icon(product.dietaryClass == 'non_veg' ? Icons.set_meal : Icons.eco, size: 14, color: product.dietaryClass == 'non_veg' ? Colors.red.shade700 : Colors.green.shade700)),
-          const SizedBox(width: Space.xs),
-        ],
-        Expanded(child: Text(product.name, maxLines: 2, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.titleSmall)),
-      ]),
-      if (product.description != null && !grid) Text(product.description!, maxLines: 2, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.bodySmall),
-      const SizedBox(height: Space.xs),
-      product.isAvailable ? MoneyText(product.variants.isNotEmpty ? product.variants.first.price : product.price, style: Theme.of(context).textTheme.titleSmall) : Text(l.outOfStock, style: TextStyle(color: Theme.of(context).colorScheme.error)),
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    final url = product.imageUrls.isEmpty ? null : '$apiBaseUrl${product.imageUrls.first}';
+    final available = product.isAvailable;
+    final price = available
+        ? MoneyText(product.variants.isNotEmpty ? product.variants.first.price : product.price, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800, color: scheme.primary))
+        : Text(l.outOfStock, style: TextStyle(color: scheme.error, fontWeight: FontWeight.w700));
+    final name = Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      if (l.dietary(product.dietaryClass).isNotEmpty) ...[
+        Padding(padding: const EdgeInsets.only(top: 3), child: _DietMark(product.dietaryClass, l.dietary(product.dietaryClass))),
+        const SizedBox(width: 6),
+      ],
+      Expanded(child: Text(product.name, maxLines: 2, overflow: TextOverflow.ellipsis, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700))),
     ]);
-    return Card(
-      child: InkWell(
-        onTap: product.isAvailable ? () => showProductSheet(context, product) : null,
-        child: grid
-            ? Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [if (image != null) image, Padding(padding: const EdgeInsets.all(Space.sm), child: info)])
-            : Padding(padding: const EdgeInsets.all(Space.sm), child: Row(children: [if (image != null) ...[ClipRRect(borderRadius: BorderRadius.circular(8), child: image), const SizedBox(width: Space.md)], Expanded(child: info), Icon(Icons.add_circle_outline, color: Theme.of(context).colorScheme.primary)])),
+    final photo = Stack(fit: StackFit.expand, children: [
+      NetworkPhoto(url: url, fallback: GlossyIcon(icon: Icons.restaurant, size: grid ? 52 : 36)),
+      if (!available) const ColoredBox(color: Color(0x88000000)),
+    ]);
+    final add = available ? const GlossyIcon(icon: Icons.add, size: 36, circle: true) : null;
+    if (grid) {
+      return Raised(
+        tilt: true,
+        onTap: available ? () => showProductSheet(context, product) : null,
+        child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          Expanded(child: Stack(fit: StackFit.expand, children: [
+            photo,
+            if (add != null) PositionedDirectional(end: Space.sm, bottom: Space.sm, child: add),
+          ])),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [name, const SizedBox(height: 6), price]),
+          ),
+        ]),
+      );
+    }
+    return Raised(
+      onTap: available ? () => showProductSheet(context, product) : null,
+      padding: const EdgeInsets.all(10),
+      child: Row(children: [
+        Container(
+          width: 96,
+          height: 96,
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(16), boxShadow: depthShadows(scheme, lift: 0.6)),
+          child: ClipRRect(borderRadius: BorderRadius.circular(16), child: photo),
+        ),
+        const SizedBox(width: Space.md),
+        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
+          name,
+          if (product.description != null) Padding(padding: const EdgeInsets.only(top: 2), child: Text(product.description!, maxLines: 2, overflow: TextOverflow.ellipsis, style: theme.textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant))),
+          const SizedBox(height: 6),
+          price,
+        ])),
+        if (add != null) ...[const SizedBox(width: Space.sm), add],
+      ]),
+    );
+  }
+}
+
+/// The square veg / non-veg mark diners look for, with its meaning on hover and for screen readers.
+class _DietMark extends StatelessWidget {
+  const _DietMark(this.dietary, this.label);
+  final String dietary;
+  final String label;
+  @override
+  Widget build(BuildContext context) {
+    final color = switch (dietary) { 'non_veg' => Colors.red.shade700, 'egg' => Colors.amber.shade800, _ => Colors.green.shade700 };
+    return Tooltip(
+      message: label,
+      excludeFromSemantics: true,
+      child: Semantics(
+        label: label,
+        child: Container(
+          padding: const EdgeInsets.all(2),
+          decoration: BoxDecoration(color: Colors.white, border: Border.all(color: color, width: 1.5), borderRadius: BorderRadius.circular(3)),
+          child: Icon(dietary == 'non_veg' ? Icons.change_history : Icons.circle, size: 8, color: color),
+        ),
       ),
     );
   }
 }
 
+/// The cafe's cover photo, or its colours lit in depth when it has none, with its logo and the guest's table.
+class _MenuHero extends StatelessWidget {
+  const _MenuHero({required this.config, required this.table});
+  final CafeConfig config;
+  final String table;
+  @override
+  Widget build(BuildContext context) {
+    final cover = config.cafe.coverUrl;
+    final logo = config.cafe.logoUrl;
+    final name = config.cafe.name;
+    return Stack(fit: StackFit.expand, children: [
+      if (cover != null) NetworkPhoto(url: '$apiBaseUrl$cover', fallback: const SizedBox.shrink()) else const AuroraBackdrop(child: SizedBox.expand()),
+      const DecoratedBox(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0x66000000), Color(0x00000000), Color(0xB3000000)], stops: [0, 0.4, 1]))),
+      PositionedDirectional(
+        start: Space.md,
+        bottom: 52,
+        child: FloatIn(
+          child: Row(children: [
+            Container(
+              decoration: BoxDecoration(borderRadius: BorderRadius.circular(18), border: Border.all(color: Colors.white, width: 2.5), boxShadow: const [BoxShadow(color: Color(0x66000000), blurRadius: 18, offset: Offset(0, 8))]),
+              child: logo != null
+                  ? ClipRRect(borderRadius: BorderRadius.circular(16), child: SizedBox.square(dimension: 56, child: NetworkPhoto(url: '$apiBaseUrl$logo')))
+                  : GlossyIcon(size: 56, color: Theme.of(context).colorScheme.secondary, child: Text(name.isEmpty ? '' : name.characters.first.toUpperCase(), style: const TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.w900))),
+            ),
+            const SizedBox(width: Space.md),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.18), borderRadius: BorderRadius.circular(20), border: Border.all(color: Colors.white.withValues(alpha: 0.35))),
+              child: Row(mainAxisSize: MainAxisSize.min, children: [const Icon(Icons.table_restaurant, size: 16, color: Colors.white), const SizedBox(width: 6), Text(table, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700))]),
+            ),
+          ]),
+        ),
+      ),
+    ]);
+  }
+}
+
+/// The way to the cart: a lit bar floating over the menu, with the count and the running total.
+class _CartBar extends StatelessWidget {
+  const _CartBar({required this.cart});
+  final Cart cart;
+  @override
+  Widget build(BuildContext context) {
+    final l = context.l10n;
+    final s = Theme.of(context).colorScheme;
+    final ink = s.onPrimary;
+    // As wide as the screen allows, less a gutter each side, and never sprawling on a desktop.
+    final width = (MediaQuery.sizeOf(context).width - 2 * Space.md).clamp(0.0, 520.0);
+    return SizedBox(
+      width: width,
+      child: Container(
+        height: 62,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(31),
+          gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color.lerp(s.primary, Colors.white, 0.14)!, s.primary, Color.lerp(s.primary, Colors.black, 0.14)!]),
+          boxShadow: [
+            BoxShadow(color: s.primary.withValues(alpha: 0.5), blurRadius: 24, offset: const Offset(0, 12), spreadRadius: -6),
+            const BoxShadow(color: Color(0x33000000), blurRadius: 4, offset: Offset(0, 2)),
+          ],
+        ),
+        child: Material(
+          type: MaterialType.transparency,
+          borderRadius: BorderRadius.circular(31),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: () => context.push('/cart'),
+            child: Padding(
+              padding: const EdgeInsetsDirectional.fromSTEB(8, 8, 20, 8),
+              child: Row(children: [
+                Container(
+                  width: 46,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(shape: BoxShape.circle, color: ink.withValues(alpha: 0.18), border: Border.all(color: ink.withValues(alpha: 0.3))),
+                  child: Text('${cart.itemCount}', style: TextStyle(color: ink, fontWeight: FontWeight.w900, fontSize: 17)),
+                ),
+                const SizedBox(width: 12),
+                Expanded(child: Text(l.viewCart, overflow: TextOverflow.ellipsis, style: TextStyle(color: ink, fontWeight: FontWeight.w800, fontSize: 16))),
+                MoneyText(cart.previewTotal!, style: TextStyle(color: ink, fontWeight: FontWeight.w800, fontSize: 16)),
+                const SizedBox(width: Space.sm),
+                Icon(Icons.arrow_forward, color: ink),
+              ]),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

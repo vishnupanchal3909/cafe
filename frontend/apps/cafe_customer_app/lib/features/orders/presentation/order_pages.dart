@@ -67,16 +67,23 @@ class _OrderBody extends StatelessWidget {
     final step = _progress.indexOf(order.status);
     final due = order.total - order.paid;
     return ListView(padding: const EdgeInsets.all(Space.md), children: [
-      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-        Text(l.orderNumber(order.orderNumber), style: Theme.of(context).textTheme.titleLarge),
-        StatusChip(label: l.orderStatus(order.status), status: order.status),
-      ]),
-      if (order.status != 'cancelled' && step >= 0) ...[
-        const SizedBox(height: Space.md),
-        Semantics(label: l.orderStatus(order.status), child: LinearProgressIndicator(value: (step + 1) / _progress.length, minHeight: 8, borderRadius: BorderRadius.circular(4))),
-      ],
+      Raised(
+        padding: const EdgeInsets.all(20),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          Row(children: [
+            GlossyIcon(icon: Icons.receipt_long, color: statusColor(order.status), size: 48),
+            const SizedBox(width: Space.md),
+            Expanded(child: Text(l.orderNumber(order.orderNumber), style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800))),
+            StatusChip(label: l.orderStatus(order.status), status: order.status),
+          ]),
+          if (order.status != 'cancelled' && step >= 0) ...[
+            const SizedBox(height: Space.lg),
+            Semantics(label: l.orderStatus(order.status), child: ExcludeSemantics(child: _Steps(current: step))),
+          ],
+        ]),
+      ),
       const SizedBox(height: Space.md),
-      Card(child: Padding(padding: const EdgeInsets.all(Space.md), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Raised(padding: const EdgeInsets.all(Space.md), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         for (final i in order.items.where((x) => x.status == 'active'))
           Padding(
             padding: const EdgeInsets.only(bottom: Space.sm),
@@ -93,10 +100,10 @@ class _OrderBody extends StatelessWidget {
         if (!order.serviceCharge.isZero) AmountRow(label: l.serviceCharge, value: order.serviceCharge),
         AmountRow(label: l.total, value: order.total, bold: true),
         if (!order.paid.isZero) AmountRow(label: l.payPaid, value: order.paid),
-      ]))),
+      ])),
       const SizedBox(height: Space.md),
       Row(children: [Text('${l.status}: '), StatusChip(label: l.paymentStatus(order.paymentStatus), status: order.paymentStatus)]),
-      if (!due.isZero && due.amount.signum > 0 && order.status != 'cancelled') ...[const SizedBox(height: Space.md), _PaySection(order: order, due: due, onChanged: onChanged)],
+      if (!due.isZero && due.amount.sign > 0 && order.status != 'cancelled') ...[const SizedBox(height: Space.md), _PaySection(order: order, due: due, onChanged: onChanged)],
       if (['ready', 'served', 'completed'].contains(order.status)) ...[const SizedBox(height: Space.md), _ReviewCard(orderId: order.publicId)],
     ]);
   }
@@ -195,7 +202,7 @@ class _PaySectionState extends State<_PaySection> {
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
-    return Card(child: Padding(padding: const EdgeInsets.all(Space.md), child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+    return Raised(padding: const EdgeInsets.all(Space.md), child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       AmountRow(label: l.balance, value: widget.due, bold: true),
       const SizedBox(height: Space.sm),
       FutureBuilder<Map<String, dynamic>>(future: _options, builder: (c, snap) {
@@ -215,7 +222,7 @@ class _PaySectionState extends State<_PaySection> {
           OutlinedButton.icon(onPressed: _requestBill, icon: const Icon(Icons.point_of_sale), label: Text(l.payAtCounter)),
         ]);
       }),
-    ])));
+    ]));
   }
 }
 
@@ -250,15 +257,15 @@ class _ReviewCardState extends State<_ReviewCard> {
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
-    if (_done) return Card(child: Padding(padding: const EdgeInsets.all(Space.md), child: Center(child: Text(l.thanks))));
-    return Card(child: Padding(padding: const EdgeInsets.all(Space.md), child: Column(children: [
-      Text(l.rateUs, style: Theme.of(context).textTheme.titleSmall),
+    if (_done) return Raised(padding: const EdgeInsets.all(Space.lg), child: Column(children: [const GlossyIcon(icon: Icons.favorite, size: 52, circle: true), const SizedBox(height: Space.sm), Text(l.thanks, style: Theme.of(context).textTheme.titleMedium)]));
+    return Raised(padding: const EdgeInsets.all(Space.md), child: Column(children: [
+      Text(l.rateUs, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800)),
       Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-        for (var i = 1; i <= 5; i++) IconButton(tooltip: '$i', icon: Icon(i <= _rating ? Icons.star : Icons.star_border), onPressed: () => setState(() => _rating = i)),
+        for (var i = 1; i <= 5; i++) IconButton(tooltip: '$i', iconSize: 34, icon: Icon(i <= _rating ? Icons.star_rounded : Icons.star_outline_rounded, color: i <= _rating ? Colors.amber.shade600 : null, shadows: i <= _rating ? [Shadow(color: Colors.amber.withValues(alpha: 0.6), blurRadius: 10)] : null), onPressed: () => setState(() => _rating = i)),
       ]),
       TextField(controller: _comment, maxLength: 2000, decoration: InputDecoration(labelText: l.notes)),
       FilledButton(onPressed: _rating == 0 ? null : _submit, child: Text(l.submit)),
-    ])));
+    ]));
   }
 }
 
@@ -274,13 +281,62 @@ class SessionOrdersPage extends StatelessWidget {
         builder: (c, orders, _) => ListView.separated(
           padding: const EdgeInsets.all(Space.md),
           itemCount: orders.length,
-          separatorBuilder: (_, _) => const SizedBox(height: Space.sm),
+          separatorBuilder: (_, _) => const SizedBox(height: Space.md),
           itemBuilder: (_, i) {
             final o = orders[i];
-            return Card(child: ListTile(title: Text(l.orderNumber(o.orderNumber)), subtitle: Text(l.orderStatus(o.status)), trailing: MoneyText(o.total), onTap: () => c.push('/orders/${o.publicId}')));
+            return Raised(
+              onTap: () => c.push('/orders/${o.publicId}'),
+              padding: const EdgeInsets.all(14),
+              child: Row(children: [
+                GlossyIcon(icon: Icons.receipt_long, color: statusColor(o.status), size: 44),
+                const SizedBox(width: Space.md),
+                Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text(l.orderNumber(o.orderNumber), style: Theme.of(c).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800)),
+                  const SizedBox(height: 4),
+                  StatusChip(label: l.orderStatus(o.status), status: o.status),
+                ])),
+                MoneyText(o.total, style: Theme.of(c).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800)),
+              ]),
+            );
           },
         ),
       ),
     );
+  }
+}
+
+/// The order's journey as a row of lit stops: done ones glow solid, the current one stands out, the rest wait flat.
+class _Steps extends StatelessWidget {
+  const _Steps({required this.current});
+  final int current;
+  @override
+  Widget build(BuildContext context) {
+    final l = context.l10n;
+    final s = Theme.of(context).colorScheme;
+    final icons = [Icons.receipt_long, Icons.thumb_up_alt_outlined, Icons.local_fire_department_outlined, Icons.notifications_active_outlined, Icons.room_service_outlined, Icons.done_all];
+    return Column(children: [
+      Row(children: [
+        for (var i = 0; i < _progress.length; i++) ...[
+          if (i > 0)
+            Expanded(
+              child: Container(
+                height: 5,
+                margin: const EdgeInsets.symmetric(horizontal: 2),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(3),
+                  gradient: i <= current ? LinearGradient(colors: [toneOf(s.primary, 0.42), toneOf(s.secondary, 0.5)]) : null,
+                  color: i <= current ? null : s.surfaceContainerHighest,
+                ),
+              ),
+            ),
+          if (i <= current)
+            GlossyIcon(icon: i < current ? Icons.check : icons[i], color: i == current ? s.secondary : s.primary, size: i == current ? 40 : 30, circle: true)
+          else
+            Container(width: 30, height: 30, decoration: BoxDecoration(shape: BoxShape.circle, color: s.surfaceContainerHighest), child: Icon(icons[i], size: 16, color: s.onSurfaceVariant)),
+        ],
+      ]),
+      const SizedBox(height: Space.sm),
+      Text(l.orderStatus(_progress[current]), style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800, color: s.primary)),
+    ]);
   }
 }

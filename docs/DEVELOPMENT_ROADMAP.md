@@ -20,7 +20,7 @@ A phase is done only when it meets the Definition of Done in brief §20. **By th
 | 1. Super Admin | Y | Y | Y | Y | Y | Y | Y | Y | Cafe orders and finance have an API, and the UI shows a summary only |
 | 2. Cafe onboarding | Y | Y | Y | Y | Y | Y | Y | Y | Tax registration is API only |
 | 3. Cafe branding | Y | Y | Y | P | Y | - | Y | Y | Fonts are not bundled, and `font_key` is not applied. Only the primary colour has an editor |
-| 4. Menu | Y | Y | Y | P | Y | Y | Y | Y | Combos, schedules and branch prices are API only. Each add-on form creates a new group |
+| 4. Menu | Y | Y | Y | P | Y | Y | Y | Y | Photo grid with one main photo per product; the API can hold more, with no gallery screen. Combos, schedules and branch prices are API only. Each add-on form creates a new group |
 | 5. Tables and QR | Y | Y | Y | P | Y | - | Y | Y | Table merge is API only. Print is via download. No session PIN |
 | 6. Customer ordering | Y | Y | Y | P | Y | Y | Y | Y | Google sign-in is not configured. Reservations use an hours-ahead field rather than a date picker |
 | 7. Kitchen | Y | Y | Y | Y | Y | - | Y | Y | |

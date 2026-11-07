@@ -45,13 +45,16 @@ async function main() {
   await api.ok(api.post('/auth/accept-invitation', { token: invite.invitationToken, password: 'cook password long' }));
 
   const scan = await api.ok(api.get(`/public/qr/${qr.url.split('/t/')[1]}`));
-  const order = await api.ok(api.post('/customer/orders', { language: 'en', notes: 'less sugar', items: [{ productId: chai.publicId, variantId: large.publicId, quantity: 2, addons: [{ addonId: group.addons[0] }], notes: 'extra hot' }] }, { session: scan.session.token }));
+  // Ordering needs a signed-in customer; the contract test signs in as this diner.
+  const diner = { email: 'diner@chai.test', password: 'diner password long' };
+  const dinerToken = (await api.ok(api.post('/customer/auth/register', { ...diner, fullName: 'Meena' }))).accessToken;
+  const order = await api.ok(api.post('/customer/orders', { language: 'en', notes: 'less sugar', items: [{ productId: chai.publicId, variantId: large.publicId, quantity: 2, addons: [{ addonId: group.addons[0] }], notes: 'extra hot' }] }, { session: scan.session.token, token: dinerToken }));
   if (mock) {
     const account = await api.ok(api.put('/cafe/gateway-accounts', { providerCode: 'razorpay', environment: 'sandbox', keyId: KEY_ID, keySecret: KEY_SECRET, webhookSecret: WEBHOOK_SECRET }, { token }));
     await api.ok(api.post(`/cafe/gateway-accounts/${account.publicId}/test`, {}, { token }));
     await api.ok(api.put('/cafe/payment-methods', { methods: ['cash', 'upi', 'card', 'payment_link'] }, { token }));
   }
-  writeFileSync(process.env.FIXTURE_FILE!, JSON.stringify({ apiUrl: `http://localhost:${process.env.LIVE_PORT}`, slug: reg.slug, branch: reg.branchPublicId, qrToken: qr.url.split('/t/')[1], session: scan.session.token, orderId: order.publicId, ownerToken: token, adminSecret: secret, kitchen: { email: 'cook@chai.test', password: 'cook password long' }, owner: { email: 'owner@chai.test', password: 'owner password long' }, adminToken }, null, 2));
+  writeFileSync(process.env.FIXTURE_FILE!, JSON.stringify({ diner, apiUrl: `http://localhost:${process.env.LIVE_PORT}`, slug: reg.slug, branch: reg.branchPublicId, qrToken: qr.url.split('/t/')[1], session: scan.session.token, orderId: order.publicId, ownerToken: token, adminSecret: secret, kitchen: { email: 'cook@chai.test', password: 'cook password long' }, owner: { email: 'owner@chai.test', password: 'owner password long' }, adminToken }, null, 2));
   console.log('LIVE STACK READY');
 }
 main().catch((e) => { console.error(e); process.exit(1); });

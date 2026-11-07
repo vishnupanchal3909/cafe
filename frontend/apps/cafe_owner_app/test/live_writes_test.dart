@@ -43,6 +43,18 @@ void main() {
     expect((p['addonGroups'] as List), isNotEmpty);
   });
 
+  test('menu: a main photo can be set, replaced and removed', () async {
+    Future<List<dynamic>> images() async => ((await r.menu())['products'] as List).cast<Map<dynamic, dynamic>>().firstWhere((p) => p['publicId'] == productId)['imageUrls'] as List;
+    final first = await r.upload(png, 'a.png', 'product_image');
+    final second = await r.upload(png, 'b.png', 'product_image');
+    await r.setProductImage(productId, first);
+    expect(await images(), ['/api/v1/public/media/$first']);
+    await r.setProductImage(productId, second);
+    expect(await images(), ['/api/v1/public/media/$second']);
+    await r.removeProductImage(productId);
+    expect(await images(), isEmpty);
+  });
+
   test('branding: logo, cover and banner', () async {
     await r.saveTheme({'logoAssetId': await r.upload(png, 'l.png', 'logo')});
     await r.saveTheme({'coverAssetId': await r.upload(png, 'c.png', 'cover')});

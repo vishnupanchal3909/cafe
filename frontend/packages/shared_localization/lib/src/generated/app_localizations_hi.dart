@@ -1051,4 +1051,143 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get openingCheckout => 'सुरक्षित चेकआउट खुल रहा है…';
+
+  @override
+  String get welcomeBack => 'आपका फिर से स्वागत है';
+
+  @override
+  String get thisMonth => 'इस महीने';
+
+  @override
+  String get revenueTrend => 'दिन के अनुसार आय';
+
+  @override
+  String get recentOrders => 'हाल के ऑर्डर';
+
+  @override
+  String get addPhoto => 'फ़ोटो जोड़ें';
+
+  @override
+  String get changePhoto => 'फ़ोटो बदलें';
+
+  @override
+  String get removePhoto => 'फ़ोटो हटाएं';
+
+  @override
+  String get filterAll => 'सभी';
+
+  @override
+  String get available => 'उपलब्ध';
+
+  @override
+  String get loginTagline => 'अपना कैफ़े एक ही जगह से शानदार तरीके से चलाएं।';
+
+  @override
+  String get signInSubtitle => 'जारी रखने के लिए साइन इन करें';
+
+  @override
+  String get showPassword => 'पासवर्ड दिखाएँ';
+
+  @override
+  String get hidePassword => 'पासवर्ड छिपाएँ';
+
+  @override
+  String get back => 'वापस';
+
+  @override
+  String get adminConsole => 'प्लेटफ़ॉर्म कंसोल';
+
+  @override
+  String get adminLoginTagline => 'प्लेटफ़ॉर्म के सभी कैफ़े, एक नज़र में।';
+
+  @override
+  String get kitchenDisplay => 'किचन डिस्प्ले';
+
+  @override
+  String get kitchenLoginTagline => 'हर टिकट, किचन के उस पार से भी साफ़।';
+
+  @override
+  String get customerLoginTagline =>
+      'पसंदीदा सहेजें, ऑर्डर ट्रैक करें और रिवॉर्ड कमाएँ।';
+
+  @override
+  String get signInToOrder => 'ऑर्डर करने के लिए साइन इन करें';
+
+  @override
+  String get signInToOrderHint =>
+      'जितना चाहें देखें। ऑर्डर करने के लिए साइन इन करें या खाता बनाएँ।';
+
+  @override
+  String get roleOwner => 'मालिक';
+
+  @override
+  String get markAvailable => 'उपलब्ध करें';
+
+  @override
+  String get tableReleased => 'टेबल अब उपलब्ध है';
+
+  @override
+  String get tableHasUnpaid =>
+      'इस टेबल के ऑर्डर का भुगतान अभी बाकी है। पहले बिल चुकाएँ।';
+
+  @override
+  String unpaidForMinutes(int minutes) {
+    return '$minutes मिनट से भुगतान बाकी';
+  }
+
+  @override
+  String tablePin(String pin) {
+    return 'PIN $pin';
+  }
+
+  @override
+  String get enterTablePin => 'टेबल PIN डालें';
+
+  @override
+  String get tablePinHint => 'अपनी टेबल का 4 अंकों का PIN स्टाफ से पूछें।';
+
+  @override
+  String get tablePinWrong => 'यह PIN मेल नहीं खाता। कृपया स्टाफ से पूछें।';
+
+  @override
+  String get setTablePin => 'ऑर्डर से पहले मेहमानों से टेबल PIN पूछें';
+
+  @override
+  String get setSessionEndAfterPayment =>
+      'भुगतान के इतने समय बाद मेहमानों का टेबल सेशन खत्म करें';
+
+  @override
+  String get setUnpaidAlert =>
+      'इतने समय बाद भी भुगतान न हुए ऑर्डर पर स्टाफ को चेताएँ';
+
+  @override
+  String get forgotPassword => 'पासवर्ड भूल गए?';
+
+  @override
+  String get resetPassword => 'नया पासवर्ड सेट करें';
+
+  @override
+  String get newPassword => 'नया पासवर्ड';
+
+  @override
+  String get passwordResetDone => 'पासवर्ड बदल गया। अब आप साइन इन कर सकते हैं।';
+
+  @override
+  String get resetLinkInvalid =>
+      'यह रीसेट लिंक समाप्त हो गया है या पहले ही उपयोग हो चुका है।';
+
+  @override
+  String get passwordResetUnavailable => 'पासवर्ड रीसेट अभी उपलब्ध नहीं है।';
+
+  @override
+  String get minutesUnit => 'मिनट';
+
+  @override
+  String get resetLinkSent =>
+      'अगर इस ईमेल का खाता है, तो रीसेट लिंक भेजा जा रहा है।';
+
+  @override
+  String countsForDay(String date) {
+    return '$date में गिना गया';
+  }
 }

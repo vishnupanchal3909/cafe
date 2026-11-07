@@ -1055,4 +1055,150 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get openingCheckout => 'Ouverture du paiement sécurisé…';
+
+  @override
+  String get welcomeBack => 'Bon retour';
+
+  @override
+  String get thisMonth => 'Ce mois-ci';
+
+  @override
+  String get revenueTrend => 'Revenus par jour';
+
+  @override
+  String get recentOrders => 'Commandes récentes';
+
+  @override
+  String get addPhoto => 'Ajouter une photo';
+
+  @override
+  String get changePhoto => 'Changer la photo';
+
+  @override
+  String get removePhoto => 'Retirer la photo';
+
+  @override
+  String get filterAll => 'Tout';
+
+  @override
+  String get available => 'Disponible';
+
+  @override
+  String get loginTagline =>
+      'Gérez votre café avec élégance, depuis un seul endroit.';
+
+  @override
+  String get signInSubtitle => 'Connectez-vous pour continuer';
+
+  @override
+  String get showPassword => 'Afficher le mot de passe';
+
+  @override
+  String get hidePassword => 'Masquer le mot de passe';
+
+  @override
+  String get back => 'Retour';
+
+  @override
+  String get adminConsole => 'Console de la plateforme';
+
+  @override
+  String get adminLoginTagline =>
+      'Tous les cafés de la plateforme, en un coup d\'œil.';
+
+  @override
+  String get kitchenDisplay => 'Écran cuisine';
+
+  @override
+  String get kitchenLoginTagline =>
+      'Chaque ticket lisible d\'un bout à l\'autre de la cuisine.';
+
+  @override
+  String get customerLoginTagline =>
+      'Enregistrez vos favoris, suivez vos commandes et gagnez des récompenses.';
+
+  @override
+  String get signInToOrder => 'Connectez-vous pour commander';
+
+  @override
+  String get signInToOrderHint =>
+      'Parcourez librement. Pour commander, connectez-vous ou créez un compte.';
+
+  @override
+  String get roleOwner => 'Propriétaire';
+
+  @override
+  String get markAvailable => 'Marquer comme libre';
+
+  @override
+  String get tableReleased => 'La table est maintenant libre';
+
+  @override
+  String get tableHasUnpaid =>
+      'Cette table a encore des commandes impayées. Réglez d\'abord l\'addition.';
+
+  @override
+  String unpaidForMinutes(int minutes) {
+    return 'Impayée depuis $minutes min';
+  }
+
+  @override
+  String tablePin(String pin) {
+    return 'PIN $pin';
+  }
+
+  @override
+  String get enterTablePin => 'Saisissez le PIN de la table';
+
+  @override
+  String get tablePinHint =>
+      'Demandez au personnel le PIN à 4 chiffres de votre table.';
+
+  @override
+  String get tablePinWrong =>
+      'Ce PIN ne correspond pas. Vérifiez auprès du personnel.';
+
+  @override
+  String get setTablePin =>
+      'Demander un PIN de table aux clients avant de commander';
+
+  @override
+  String get setSessionEndAfterPayment =>
+      'Fermer la session de table ce délai après le paiement';
+
+  @override
+  String get setUnpaidAlert =>
+      'Prévenir le personnel des commandes encore impayées après';
+
+  @override
+  String get forgotPassword => 'Mot de passe oublié ?';
+
+  @override
+  String get resetPassword => 'Définir un nouveau mot de passe';
+
+  @override
+  String get newPassword => 'Nouveau mot de passe';
+
+  @override
+  String get passwordResetDone =>
+      'Mot de passe modifié. Vous pouvez vous connecter.';
+
+  @override
+  String get resetLinkInvalid => 'Ce lien a expiré ou a déjà été utilisé.';
+
+  @override
+  String get passwordResetUnavailable =>
+      'La réinitialisation du mot de passe n\'est pas encore disponible.';
+
+  @override
+  String get minutesUnit => 'min';
+
+  @override
+  String get resetLinkSent =>
+      'Si cette adresse a un compte, un lien est en route.';
+
+  @override
+  String countsForDay(String date) {
+    return 'compte pour le $date';
+  }
 }

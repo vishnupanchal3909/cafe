@@ -1050,4 +1050,145 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get openingCheckout => 'جارٍ فتح صفحة الدفع الآمنة…';
+
+  @override
+  String get welcomeBack => 'مرحبًا بعودتك';
+
+  @override
+  String get thisMonth => 'هذا الشهر';
+
+  @override
+  String get revenueTrend => 'الإيرادات حسب اليوم';
+
+  @override
+  String get recentOrders => 'الطلبات الأخيرة';
+
+  @override
+  String get addPhoto => 'إضافة صورة';
+
+  @override
+  String get changePhoto => 'تغيير الصورة';
+
+  @override
+  String get removePhoto => 'إزالة الصورة';
+
+  @override
+  String get filterAll => 'الكل';
+
+  @override
+  String get available => 'متوفر';
+
+  @override
+  String get loginTagline => 'أدر مقهاك بأناقة من مكان واحد.';
+
+  @override
+  String get signInSubtitle => 'سجّل الدخول للمتابعة';
+
+  @override
+  String get showPassword => 'إظهار كلمة المرور';
+
+  @override
+  String get hidePassword => 'إخفاء كلمة المرور';
+
+  @override
+  String get back => 'رجوع';
+
+  @override
+  String get adminConsole => 'لوحة تحكم المنصة';
+
+  @override
+  String get adminLoginTagline => 'كل مقاهي المنصة في لمحة واحدة.';
+
+  @override
+  String get kitchenDisplay => 'شاشة المطبخ';
+
+  @override
+  String get kitchenLoginTagline => 'كل طلب واضح من أي مكان في المطبخ.';
+
+  @override
+  String get customerLoginTagline =>
+      'احفظ المفضلة وتتبّع طلباتك واكسب المكافآت.';
+
+  @override
+  String get signInToOrder => 'سجّل الدخول لتطلب';
+
+  @override
+  String get signInToOrderHint =>
+      'تصفّح كما تشاء. لتقديم طلب، سجّل الدخول أو أنشئ حسابًا.';
+
+  @override
+  String get roleOwner => 'المالك';
+
+  @override
+  String get markAvailable => 'تعيين كمتاحة';
+
+  @override
+  String get tableReleased => 'الطاولة متاحة الآن';
+
+  @override
+  String get tableHasUnpaid =>
+      'لهذه الطاولة طلبات غير مدفوعة. سدّد الفاتورة أولًا.';
+
+  @override
+  String unpaidForMinutes(int minutes) {
+    return 'غير مدفوع منذ $minutes دقيقة';
+  }
+
+  @override
+  String tablePin(String pin) {
+    return 'الرمز $pin';
+  }
+
+  @override
+  String get enterTablePin => 'أدخل رمز الطاولة';
+
+  @override
+  String get tablePinHint =>
+      'اطلب من الموظفين الرمز المكوّن من 4 أرقام لطاولتك.';
+
+  @override
+  String get tablePinWrong => 'هذا الرمز غير صحيح. يُرجى التحقق مع الموظفين.';
+
+  @override
+  String get setTablePin => 'اطلب من الضيوف رمز الطاولة قبل الطلب';
+
+  @override
+  String get setSessionEndAfterPayment =>
+      'أنهِ جلسة الطاولة بعد الدفع بهذه المدة';
+
+  @override
+  String get setUnpaidAlert => 'نبّه الموظفين إلى الطلبات غير المدفوعة بعد';
+
+  @override
+  String get forgotPassword => 'هل نسيت كلمة المرور؟';
+
+  @override
+  String get resetPassword => 'تعيين كلمة مرور جديدة';
+
+  @override
+  String get newPassword => 'كلمة المرور الجديدة';
+
+  @override
+  String get passwordResetDone =>
+      'تم تغيير كلمة المرور. يمكنك تسجيل الدخول الآن.';
+
+  @override
+  String get resetLinkInvalid =>
+      'انتهت صلاحية رابط إعادة التعيين أو تم استخدامه.';
+
+  @override
+  String get passwordResetUnavailable =>
+      'إعادة تعيين كلمة المرور غير متاحة بعد.';
+
+  @override
+  String get minutesUnit => 'دقيقة';
+
+  @override
+  String get resetLinkSent =>
+      'إذا كان لهذا البريد حساب، فسيصلك رابط إعادة التعيين.';
+
+  @override
+  String countsForDay(String date) {
+    return 'يُحتسب ليوم $date';
+  }
 }
